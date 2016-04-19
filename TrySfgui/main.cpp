@@ -1,109 +1,188 @@
+
+#include "game_state.h"
+#include "game_interface.h"
+
+class Config
+{
+public:
+	static const int FPS = 60;
+	static const int screen_width = 1200;
+	static const int screen_height = 780;
+};
+
+
+game_state coreState;
+bool quitGame = false;
+
+int main()
+{
+	//reset random
+	srand(time(NULL));
+
+	//init window
+	sf::ContextSettings antialiasing;
+	antialiasing.antialiasingLevel = 32;
+	auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode(Config::screen_width, Config::screen_height), "Try Sf Gui", sf::Style::Titlebar, antialiasing);
+	window->setPosition(sf::Vector2i(0, 0));
+
+	auto gameInterface = std::make_shared<GameInterface>();
+
+	//set data to coreState
+	coreState.SetWindow(window);
+	coreState.SetGameInterface(gameInterface);
+	coreState.SetState();
+
+
+	sf::Clock deltaTime; float dt = 0.001;
+
+	while (window->isOpen())
+	{
+		window->clear(sf::Color::Black);
+
+		coreState.setDeltaTime(dt);
+		coreState.Update();
+		coreState.Render();
+
+		dt = deltaTime.restart().asSeconds();
+
+		window->display();
+
+		if (quitGame)
+		{
+			window->close();
+		}
+	}
+
+	return 0;
+}
+
+
+
+/*
+
+
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Widgets.hpp>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
+#include <cmath>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+int main() {
+	// An sf::Window for raw OpenGL rendering.
+	sf::Window app_window(sf::VideoMode(800, 600), "SFGUI with OpenGL example", sf::Style::Titlebar | sf::Style::Close);
 
-class HelloWorld {
-public:
-	// Our button click handler.
-	void OnButtonClick();
-
-	void Run();
-
-private:
 	// Create an SFGUI. This is required before doing anything with SFGUI.
-	sfg::SFGUI m_sfgui;
+	sfg::SFGUI sfgui;
 
-	// Create the label pointer here to reach it from OnButtonClick().
-	sfg::Label::Ptr m_label;
+	// Set the SFML Window's context back to the active one. SFGUI creates
+	// a temporary context on creation that is set active.
+	app_window.setActive();
 
-	bool enabled;
-};
+	// Initial OpenGL setup.
+	// We have to set up our own OpenGL viewport because we are using an sf::Window.
+	glViewport(0, 0, static_cast<int>(app_window.getSize().x), static_cast<int>(app_window.getSize().y));
 
-void HelloWorld::OnButtonClick() {
-	this->enabled = !this->enabled;
-	if (this->enabled)
-	{
-		m_label->SetText("Hello SFGUI, pleased to meet you!");
-	}
-	else {
-		m_label->SetText("Oooo MMMMyyy godddd !");
-	}
-}
+	auto red_scale = sfg::Scale::Create(0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL);
+	auto green_scale = sfg::Scale::Create(0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL);
+	auto blue_scale = sfg::Scale::Create(0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL);
+	auto angle_scale = sfg::Scale::Create(0.f, 360.f, 1.f, sfg::Scale::Orientation::HORIZONTAL);
+	auto auto_check = sfg::CheckButton::Create("Auto");
 
-void HelloWorld::Run() {
-	this->enabled = false;
-	// Create SFML's window.
-	sf::RenderWindow render_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Hello world!");
+	auto table = sfg::Table::Create();
+	table->SetRowSpacings(5.f);
+	table->SetColumnSpacings(5.f);
 
-	// Create the label.
-	m_label = sfg::Label::Create("Hello world!");
-	m_label->SetId("name");
-	sfg::Context::Get().GetEngine().SetProperty("#name", "Color", sf::Color(127, 37, 38, 255));
-	sfg::Context::Get().GetEngine().SetProperty("#name", "BackgroundColor", sf::Color(2, 37, 200, 255));
+	table->Attach(sfg::Label::Create("Change the color of the rect using the scales below."), sf::Rect<sf::Uint32>(0, 0, 3, 1), sfg::Table::FILL, sfg::Table::FILL);
+	table->Attach(sfg::Label::Create("Red:"), sf::Rect<sf::Uint32>(0, 1, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
+	table->Attach(red_scale, sf::Rect<sf::Uint32>(1, 1, 1, 1), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND);
+	table->Attach(sfg::Label::Create("Green:"), sf::Rect<sf::Uint32>(0, 2, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
+	table->Attach(green_scale, sf::Rect<sf::Uint32>(1, 2, 1, 1), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND);
+	table->Attach(sfg::Label::Create("Blue:"), sf::Rect<sf::Uint32>(0, 3, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
+	table->Attach(blue_scale, sf::Rect<sf::Uint32>(1, 3, 1, 1), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND);
+	table->Attach(sfg::Label::Create("Angle:"), sf::Rect<sf::Uint32>(0, 4, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
+	table->Attach(angle_scale, sf::Rect<sf::Uint32>(1, 4, 1, 1), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND);
+	table->Attach(auto_check, sf::Rect<sf::Uint32>(2, 4, 1, 1), sfg::Table::FILL, sfg::Table::FILL);
 
-	// Create a simple button and connect the click signal.
-	auto button = sfg::Button::Create("Greet SFGUI!");
-	button->GetSignal(sfg::Widget::OnLeftClick).Connect(std::bind(&HelloWorld::OnButtonClick, this));
-
-	// Create a vertical box layouter with 5 pixels spacing and add the label
-	// and button to it.
-	auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 5.0f);
-	box->SetId("button");
-	sfg::Context::Get().GetEngine().SetProperty("#button", "Color", sf::Color(127, 37, 38, 255));
-	sfg::Context::Get().GetEngine().SetProperty("#button", "BackgroundColor", sf::Color(200, 37, 78, 255));
-
-	box->Pack(m_label);
-	box->Pack(button, false);
-
-	// Create a window and add the box layouter to it. Also set the window's title.
 	auto window = sfg::Window::Create();
-	window->SetId("window");
-	window->setPo
-	sfg::Context::Get().GetEngine().SetProperty("#window", "Color", sf::Color(127, 37, 38, 255));
-	sfg::Context::Get().GetEngine().SetProperty("#window", "BackgroundColor", sf::Color(2, 200, 78, 255));
-	window->SetTitle("Hello world!");
-	window->Add(box);
+	window->SetTitle("SFGUI with OpenGL");
+	window->Add(table);
 
-	// Create a desktop and add the window to it.
 	sfg::Desktop desktop;
 	desktop.Add(window);
 
-	// We're not using SFML to render anything in this program, so reset OpenGL
-	// states. Otherwise we wouldn't see anything.
-	render_window.resetGLStates();
+	red_scale->SetValue(.2f);
+	green_scale->SetValue(.5f);
+	blue_scale->SetValue(.8f);
 
-	// Main loop!
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	static const auto pi = 3.1415926535897932384626433832795f;
+	static const auto fov = 90.f;
+	static const auto near_distance = .1f;
+	static const auto far_distance = 100.f;
+	static const auto aspect = 800.f / 600.f;
+
+	auto frustum_height = std::tan(fov / 360 * pi) * near_distance;
+	auto frustum_width = frustum_height * aspect;
+
+	glFrustum(-frustum_width, frustum_width, -frustum_height, frustum_height, near_distance, far_distance);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	sf::Event event;
+
 	sf::Clock clock;
 
-	while (render_window.isOpen()) {
-		// Event processing.
-		while (render_window.pollEvent(event)) {
-			desktop.HandleEvent(event);
+	while (app_window.isOpen()) {
+		auto delta = clock.restart().asSeconds();
 
-			// If window is about to be closed, leave program.
+		while (app_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
-				render_window.close();
+				app_window.close();
+			}
+			else {
+				desktop.HandleEvent(event);
 			}
 		}
 
-		// Update SFGUI with elapsed seconds since last call.
-		desktop.Update(clock.restart().asSeconds());
+		if (auto_check->IsActive()) {
+			float angle(angle_scale->GetValue());
+			angle += delta * 90.f;
 
-		// Rendering.
-		render_window.clear();
-		m_sfgui.Display(render_window);
-		render_window.display();
+			while (angle >= 360.f) {
+				angle -= 360.f;
+			}
+
+			angle_scale->SetValue(angle);
+		}
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glMatrixMode(GL_MODELVIEW);
+
+		glLoadIdentity();
+		glRotatef(angle_scale->GetValue(), 0.f, 0.f, 1.f);
+		glTranslatef(-.5f, -.5f, -5.f);
+
+		glBegin(GL_QUADS);
+		glColor3f(red_scale->GetValue(), green_scale->GetValue(), blue_scale->GetValue());
+		glVertex3f(0.f, 1.f, 0.f);
+		glVertex3f(0.f, 0.f, 0.f);
+		glVertex3f(1.f, 0.f, 0.f);
+		glVertex3f(1.f, 1.f, 0.f);
+		glEnd();
+
+		desktop.Update(delta);
+
+		// SFGUI rendering.
+		sfgui.Display(app_window);
+
+		app_window.display();
 	}
-}
-
-int main() {
-	HelloWorld hello_world;
-	hello_world.Run();
 
 	return 0;
 }
+*/
