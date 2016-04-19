@@ -30,7 +30,7 @@ int main()
 	//set data to coreState
 	coreState.SetWindow(window);
 	coreState.SetGameInterface(gameInterface);
-	coreState.SetState();
+	//coreState.SetState();
 
 
 	sf::Clock deltaTime; float dt = 0.001;

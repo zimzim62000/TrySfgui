@@ -137,7 +137,7 @@ float GameSpeed::getGameSpeedDeltaTime()
 	return tmp;
 }
 
-float game_speed::getGameSpeedDeltaTimeWithFps()
+float GameSpeed::getGameSpeedDeltaTimeWithFps()
 {
 	float tmp = (this->gameSpeed * this->deltaTime);
 	return tmp;
