@@ -16,7 +16,18 @@ GameSpeed::GameSpeed()
 	this->deltaTime = this->deltaTimeCounter = this->deltaTimeSecond = this->deltaTimeSpeed = 0;
 
 	this->texture = std::make_shared<sf::Texture>();
+	
 	this->tileSetTexture = std::make_shared<sf::Image>();
+	this->ImgPauseActive = std::make_shared<sf::Image>();
+	this->ImgPauseInactive = std::make_shared<sf::Image>();
+	this->ImgPlayActive = std::make_shared<sf::Image>();
+	this->ImgPlayInactive = std::make_shared<sf::Image>();
+
+	this->speedText = std::make_shared<sf::Text>();
+	this->counterSecondText = std::make_shared<sf::Text>();
+	this->fpsText = std::make_shared<sf::Text>();
+	this->counter = std::make_shared<sf::Text>();
+	this->pauseText = std::make_shared<sf::Text>();
 
 	this->font = std::make_shared<sf::Font>();
 	this->font->loadFromFile("Graphics/font.ttf");

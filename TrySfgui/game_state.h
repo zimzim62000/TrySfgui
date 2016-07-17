@@ -28,6 +28,7 @@ public:
 class game_state
 {
 public:
+
 	game_state()
 	{
 		this->state = NULL;
@@ -36,7 +37,6 @@ public:
 	void setDeltaTime(const float dt) {
 		this->deltaT = dt;
 	};
-
 
 	void SetWindow(std::shared_ptr<sf::RenderWindow> window)
 	{
