@@ -17,21 +17,21 @@ public:
 	float getGameSpeedDeltaTime();
 	float getGameSpeedDeltaTimeWithFps();
 	void setDeltaTime(float const dt);
+	void SetPause(bool const paused);
 
 	std::shared_ptr<sf::Text> speedText;
 	std::shared_ptr<sf::Text> counterSecondText;
 	std::shared_ptr<sf::Text> fpsText;
+	std::shared_ptr<sf::Text> counterText;
+	std::shared_ptr<sf::Text> pauseText;
 private:
 	void generateSprite();
-
 	std::shared_ptr<sf::Font> font;
-	std::shared_ptr<sf::Text> counter;
-	std::shared_ptr<sf::Text> pauseText;
 
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image>tileSetTexture, ImgPauseActive, ImgPauseInactive, ImgPlayActive, ImgPlayInactive;
 
-	float deltaTime, deltaTimeCounter, deltaTimeSecond, deltaTimeSpeed;
+	float deltaTime, deltaTimeCounter, deltaTimeSecond, deltaTimeSpeed, counterTime;
 	int gameSpeed, gameSpeedMax, gameSpeedMin, tileWidth, tileHeight;
 	bool gamePause, subtractKey, addKey, echapKey, gameTick;
 };

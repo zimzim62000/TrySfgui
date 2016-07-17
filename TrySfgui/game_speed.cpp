@@ -13,7 +13,7 @@ GameSpeed::GameSpeed()
 	this->tileWidth = 64;
 	this->tileHeight = 64;
 
-	this->deltaTime = this->deltaTimeCounter = this->deltaTimeSecond = this->deltaTimeSpeed = 0;
+	this->deltaTime = this->deltaTimeCounter = this->deltaTimeSecond = this->deltaTimeSpeed = this->counterTime = 0;
 
 	this->texture = std::make_shared<sf::Texture>();
 	
@@ -26,7 +26,7 @@ GameSpeed::GameSpeed()
 	this->speedText = std::make_shared<sf::Text>();
 	this->counterSecondText = std::make_shared<sf::Text>();
 	this->fpsText = std::make_shared<sf::Text>();
-	this->counter = std::make_shared<sf::Text>();
+	this->counterText = std::make_shared<sf::Text>();
 	this->pauseText = std::make_shared<sf::Text>();
 
 	this->font = std::make_shared<sf::Font>();
@@ -61,8 +61,12 @@ void GameSpeed::Initialize(std::shared_ptr<sf::RenderWindow> window)
 	this->counterSecondText->setPosition(10, this->counterSecondText->getGlobalBounds().height / 2);
 	this->counterSecondText->setColor(sf::Color::Green);
 
+	this->counterText = std::make_shared<sf::Text>("1000", *this->font, 28U);
+	this->counterText->setPosition(10, this->counterText->getGlobalBounds().height / 2 + this->counterSecondText->getGlobalBounds().height);
+	this->counterText->setColor(sf::Color::White);
+
 	this->fpsText = std::make_shared<sf::Text>("1000", *this->font, 28U);
-	this->fpsText->setPosition(10 , this->fpsText->getGlobalBounds().height / 2 + this->counterSecondText->getGlobalBounds().height);
+	this->fpsText->setPosition(10 , this->fpsText->getGlobalBounds().height / 2 + this->counterSecondText->getGlobalBounds().height*2);
 	this->fpsText->setColor(sf::Color::Red);
 
 	this->generateSprite();
@@ -72,6 +76,9 @@ void GameSpeed::Initialize(std::shared_ptr<sf::RenderWindow> window)
 
 bool GameSpeed::Update(std::shared_ptr<sf::RenderWindow> window)
 {
+	this->counterTime += this->deltaTime;
+	this->counterText->setString(std::to_string(this->counterTime));
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && !this->echapKey) {
 		if (this->gamePause == false) {
 			this->gameSpeed = 0;
@@ -128,7 +135,7 @@ bool GameSpeed::Update(std::shared_ptr<sf::RenderWindow> window)
 void GameSpeed::Destroy(std::shared_ptr<sf::RenderWindow> window)
 {
 	this->font.reset();
-	this->counter.reset();
+	this->counterText.reset();
 	this->speedText.reset();
 }
 
@@ -182,4 +189,16 @@ void GameSpeed::generateSprite()
 		}
 	}
 	this->setTexture(*this->texture);
+}
+
+void GameSpeed::SetPause(bool const paused)
+{
+	this->gamePause = paused;
+	if (paused) {
+		this->gameSpeed = 0;
+	}
+	else {
+		this->gameSpeed = 1;
+	}
+	this->generateSprite();
 }
