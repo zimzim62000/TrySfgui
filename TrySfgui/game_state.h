@@ -84,6 +84,10 @@ public:
 			this->state->Destroy(this->gameInterface, this->window);
 		}
 	};
+	void HandleEvent(sf::Event event)
+	{
+		this->gameInterface->HandleEvent(this->window, event);
+	};
 private:
 	std::shared_ptr<sf::RenderWindow> window;
 	std::shared_ptr<GameInterface> gameInterface;
