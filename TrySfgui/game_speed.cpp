@@ -139,12 +139,12 @@ void GameSpeed::Destroy(std::shared_ptr<sf::RenderWindow> window)
 	this->speedText.reset();
 }
 
-bool GameSpeed::Paused()
+bool GameSpeed::Paused() const
 {
 	return this->gamePause;
 }
 
-int GameSpeed::getGameSpeed()
+int GameSpeed::getGameSpeed() const
 {
 	return this->gameSpeed;
 }
@@ -161,12 +161,17 @@ float GameSpeed::getGameSpeedDeltaTimeWithFps()
 	return tmp;
 }
 
-float GameSpeed::getDeltaTime()
+float GameSpeed::getDeltaTime() const
 {
 	return this->deltaTime;
 }
 
-bool GameSpeed::getGameTick()
+float GameSpeed::getCounterTime() const
+{
+	return this->counterTime;
+}
+
+bool GameSpeed::getGameTick() const
 {
 	return this->gameTick;
 }

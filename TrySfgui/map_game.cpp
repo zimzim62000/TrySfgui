@@ -18,11 +18,12 @@ MapGame::MapGame()
 	this->black_case = std::make_shared<MapTile>(false, 1000, "black.png");
 	this->white_case = std::make_shared<MapTile>(true, 1, "white.png");
 
+	this->caseMouse = std::make_shared<sf::RectangleShape>();
 
-	this->width = 0;
-	this->height = 0;
-	this->tileWidth = 0;
-	this->tileHeight = 0;
+	this->width = 1;
+	this->height = 1;
+	this->tileWidth = 1;
+	this->tileHeight = 1;
 }
 
 void MapGame::Load(std::string filename)
@@ -38,9 +39,16 @@ void MapGame::Load(std::string filename)
 	this->tileWidth = mapFileDoc["tilewidth"].GetInt();
 	this->tileHeight = mapFileDoc["tileheight"].GetInt();
 
+	this->caseMouse->setSize(sf::Vector2f(this->tileWidth-8, this->tileHeight-8));
+	this->caseMouse->setFillColor(sf::Color::Transparent);
+	this->caseMouse->setOutlineThickness(4);
+	this->caseMouse->setOrigin(sf::Vector2f(-4, -4));
+	this->caseMouse->setOutlineColor(sf::Color::Red);
+
 	Value& dataArray = mapFileDoc["layers"];
 
 	this->data = new int[this->width * this->height];
+	this->defaultData = new int[this->width * this->height];
 
 	if (dataArray.IsArray())
 	{
@@ -54,11 +62,17 @@ void MapGame::Load(std::string filename)
 				{
 					int tmp = dataTileset[x + y * this->width].GetInt();
 					this->data[x + y * this->width] = tmp;
+					this->defaultData[x + y * this->width] = tmp;
 				}
 			}
 		}
 	}
+	this->GenerateSprite();
+}
 
+
+void MapGame::GenerateSprite()
+{
 	this->texture->create(this->width * this->tileWidth, this->height * this->tileHeight);
 
 	for (int y = 0; y < this->height; y += 1)
@@ -67,10 +81,10 @@ void MapGame::Load(std::string filename)
 		{
 			switch (this->data[x + y *  this->width])
 			{
-			case 1:
+			case WHITE:
 				this->texture->update(*this->white_case, x * this->tileWidth, y * this->tileHeight);
 				break;
-			case 2:
+			case BLACK:
 				this->texture->update(*this->black_case, x * this->tileWidth, y * this->tileHeight);
 				break;
 			default:
@@ -82,19 +96,29 @@ void MapGame::Load(std::string filename)
 	this->setTexture(*this->texture);
 }
 
+bool MapGame::MouseMove()
+{
+	return this->mouseOnMove;
+}
+
 void MapGame::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window)
 {
 
 }
 
-std::shared_ptr<MapTile> MapGame::getOnThisPositionNoeud(const int x, const int y)
+std::shared_ptr<MapTile> MapGame::getAtThisPosition(const int x, const int y)
+{
+	return this->getAtThisPositionNoeud(x / this->tileWidth, y / this->tileWidth);
+}
+
+std::shared_ptr<MapTile> MapGame::getAtThisPositionNoeud(const int x, const int y)
 {
 	switch (this->data[x + y *  this->width])
 	{
-	case 1:
+	case WHITE:
 		return this->white_case;
 		break;
-	case 2:
+	case BLACK:
 	default:
 		return this->black_case;
 		break;
@@ -109,7 +133,7 @@ std::pair<int, int> MapGame::getPositionAvailable()
 	{
 		x = utility::randInt(this->width, false);
 		y = utility::randInt(this->height, false);
-		if (this->getOnThisPositionNoeud(x, y)->passable == true) {
+		if (this->getAtThisPositionNoeud(x, y)->passable == true) {
 			find = true;
 		}
 	}

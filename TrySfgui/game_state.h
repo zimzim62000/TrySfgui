@@ -3,26 +3,34 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "game_interface.h"
+#include "map_game.h"
 
 class tiny_state
 {
 public:
 
-	virtual void Initialize(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window)
+	virtual void Initialize(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
 	{
 	}
 
-	virtual void Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window)
+	virtual void Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
 	{
 	}
 
-	virtual void Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window)
+	virtual void Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
 	{
 	}
 
-	virtual void Destroy(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window)
+	virtual void Destroy(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
 	{
 	}
+
+	virtual int GetStateValue()
+	{
+		return this->value;
+	}
+protected:
+	int value = 0;
 };
 
 class game_state
@@ -48,16 +56,21 @@ public:
 		this->gameInterface = GameInterface;
 	};
 
+	void SetMapGame(std::shared_ptr<MapGame> MapGame)
+	{
+		this->mapGame = MapGame;
+	};
+
 	void SetState(std::shared_ptr<tiny_state> state)
 	{
 		if (this->state != NULL)
 		{
-			this->state->Destroy(this->gameInterface, this->window);
+			this->state->Destroy(this->gameInterface, this->window, this->mapGame);
 		}
 		this->state = state;
 		if (this->state != NULL)
 		{
-			this->state->Initialize(this->gameInterface, this->window);
+			this->state->Initialize(this->gameInterface, this->window, this->mapGame);
 		}
 	};
 
@@ -66,14 +79,14 @@ public:
 		if (this->state != NULL)
 		{
 			this->gameInterface->gameSpeed->setDeltaTime(this->deltaT);
-			this->state->Update(this->gameInterface, this->window);
+			this->state->Update(this->gameInterface, this->window, this->mapGame);
 		}
 	}
 	void Render()
 	{
 		if (this->state != NULL)
 		{
-			this->state->Render(this->gameInterface, this->window);
+			this->state->Render(this->gameInterface, this->window, this->mapGame);
 		}
 	};
 
@@ -81,15 +94,14 @@ public:
 	{
 		if (this->state != NULL)
 		{
-			this->state->Destroy(this->gameInterface, this->window);
+			this->state->Destroy(this->gameInterface, this->window, this->mapGame);
 		}
 	};
-private:
+
 	std::shared_ptr<sf::RenderWindow> window;
 	std::shared_ptr<GameInterface> gameInterface;
 	std::shared_ptr<tiny_state> state;
+	std::shared_ptr<MapGame> mapGame;
+private:
 	float deltaT;
 };
-
-extern game_state coreState;
-extern bool quitGame;

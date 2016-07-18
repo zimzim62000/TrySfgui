@@ -10,12 +10,13 @@ public:
 	void Initialize(std::shared_ptr<sf::RenderWindow> window);
 	bool Update(std::shared_ptr<sf::RenderWindow> window);
 	void Destroy(std::shared_ptr<sf::RenderWindow> window);
-	bool Paused();
-	bool getGameTick();
-	int getGameSpeed();
-	float getDeltaTime();
+	bool Paused() const;
+	bool getGameTick() const;
+	int getGameSpeed() const;
+	float getDeltaTime() const;
 	float getGameSpeedDeltaTime();
 	float getGameSpeedDeltaTimeWithFps();
+	float getCounterTime() const;
 	void setDeltaTime(float const dt);
 	void SetPause(bool const paused);
 

@@ -42,17 +42,30 @@ public:
 
 	void Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window);
 
-	std::shared_ptr<MapTile> getOnThisPositionNoeud(const int x, const int y);
+	std::shared_ptr<MapTile> getAtThisPosition(const int x, const int y);
+
+	std::shared_ptr<MapTile> getAtThisPositionNoeud(const int x, const int y);
 
 	std::pair<int, int> getPositionAvailable();
+
+	bool MouseMove();
 
 	~MapGame();
 
 	std::string tileSet;
 	int width, height, tileWidth, tileHeight;
 	int* data;
+	int* defaultData;
+	bool mouseOnMove;
+	enum
+	{
+		WHITE = 1, BLACK = 0
+	};
+
+	std::shared_ptr<sf::RectangleShape> caseMouse;
 
 private:
+	void MapGame::GenerateSprite();
 
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image> tileSetTexture;
