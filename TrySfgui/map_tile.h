@@ -7,8 +7,7 @@
 class MapTile : public sf::Image
 {
 public:
-	MapTile(const bool passable, const int weight, const std::string fileName);
+	MapTile(const bool passable, const int weight);
 	bool passable;
 	int weight;
-	std::string fileName;
 };

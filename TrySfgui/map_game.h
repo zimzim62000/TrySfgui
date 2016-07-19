@@ -7,6 +7,8 @@
 #include "map_tile.h"
 #include <memory>
 #include "game_interface.h"
+#include <vector>
+#include "camera.h"
 
 struct noeud {
 	float cout_g, cout_h, cout_f;
@@ -36,7 +38,7 @@ typedef enum
 class MapGame : public sf::Sprite
 {
 public:
-	MapGame();
+	MapGame(std::shared_ptr<sf::RenderWindow> window);
 
 	void Load(std::string filename);
 
@@ -49,6 +51,10 @@ public:
 	std::pair<int, int> getPositionAvailable();
 
 	bool MouseMove();
+
+	bool MoveMouse(const float x, const float y);
+
+	bool CheckCamera(std::shared_ptr<sf::RenderWindow> window);
 
 	~MapGame();
 
@@ -63,6 +69,10 @@ public:
 	};
 
 	std::shared_ptr<sf::RectangleShape> caseMouse;
+
+	std::vector<std::shared_ptr<MapTile>> Tiles;
+
+	std::shared_ptr<Camera> camera;
 
 private:
 	void MapGame::GenerateSprite();

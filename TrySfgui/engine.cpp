@@ -14,7 +14,7 @@ Engine::Engine()
 	this->gameInterface = std::make_shared<GameInterface>();
 
 	//init mapgame
-	this->mapGame = std::make_shared<MapGame>();
+	this->mapGame = std::make_shared<MapGame>(window);
 
 	//init gameState 
 	this->gameState = std::make_shared<game_state>();
@@ -95,14 +95,64 @@ bool Engine::PollEvent()
 			window->close();
 		}
 
-
+		
 		if (event.type == sf::Event::MouseMoved)
 		{
+			int x = (event.mouseMove.x + this->mapGame->camera->getPosition().x) * this->mapGame->camera->currentZoom;
+			int y = (event.mouseMove.y + this->mapGame->camera->getPosition().y) * this->mapGame->camera->currentZoom;
+			/*
+			if (this->mapGame->camera->getPosition().x > this->mapGame->camera->getSize().x ) {
+				x += this->mapGame->camera->getPosition().x - this->mapGame->camera->getSize().x;
+			}
+			if (this->mapGame->camera->getPosition().y > this->mapGame->camera->getSize().y) {
+				y += this->mapGame->camera->getPosition().y - this->mapGame->camera->getSize().y;
+			}
+			*/
+
 			this->gameInterface->mousePointer->setPosition(event.mouseMove.x - this->gameInterface->mousePointer->getGlobalBounds().width / 2, event.mouseMove.y - this->gameInterface->mousePointer->getGlobalBounds().height / 2);
 
-			this->mapGame->caseMouse->setPosition(int(event.mouseMove.x / this->mapGame->tileWidth)*this->mapGame->tileWidth, int(event.mouseMove.y / this->mapGame->tileHeight)*this->mapGame->tileHeight);
+			this->mapGame->MoveMouse(int(x / this->mapGame->tileWidth)*this->mapGame->tileWidth, int(y / this->mapGame->tileHeight)*this->mapGame->tileHeight);
 		}
 
+
+		if (event.type == sf::Event::MouseWheelScrolled)
+		{
+			if (event.mouseWheelScroll.delta > 0) {
+				this->mapGame->camera->zoom++;
+			}
+			else if (event.mouseWheelScroll.delta < 0) {
+				this->mapGame->camera->zoom--;
+			}
+			if (this->mapGame->camera->zoom == 0) {
+				this->mapGame->camera->zoom = 0;
+				this->mapGame->camera->currentZoom = 2;//1;
+			}
+			if (this->mapGame->camera->zoom > 1) {
+				this->mapGame->camera->zoom = 1;
+				this->mapGame->camera->currentZoom = 4;// 2;
+			}
+			if (this->mapGame->camera->zoom < -1) {
+				this->mapGame->camera->zoom = -1;
+				this->mapGame->camera->currentZoom = 1;//0.5f;
+			}
+			this->mapGame->camera->ChangeZoom(window);
+			this->mapGame->CheckCamera(window);
+		}
+
+		if (event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Left) {
+				this->mapGame->camera->MoveCamera(-10, 0);
+			}
+			else if (event.key.code == sf::Keyboard::Right) {
+				this->mapGame->camera->MoveCamera(10, 0);
+			}else if (event.key.code == sf::Keyboard::Up) {
+				this->mapGame->camera->MoveCamera(0, -10);
+			}
+			else if (event.key.code == sf::Keyboard::Down) {
+				this->mapGame->camera->MoveCamera(0, 10);
+			}
+			this->mapGame->CheckCamera(window);
+		}
 
 		if (event.type == sf::Event::LostFocus)
 			this->gameInterface->gameSpeed->SetPause(true);

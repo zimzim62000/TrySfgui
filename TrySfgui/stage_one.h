@@ -4,6 +4,7 @@
 #include "map_game.h"
 #include <memory>
 #include "engine.h"
+#include "camera.h"
 
 class stage_one : public tiny_state
 {

@@ -1,5 +1,12 @@
 #include "camera.h"
 
+Camera::Camera()
+{
+	this->zoom = 0;
+	this->currentZoom = 2;
+	this->setPosition(0, 0);
+}
+
 /*
 void Camera::folowEntity(Entity* entity) {
 	float a, b;
@@ -25,4 +32,11 @@ void Camera::MoveCamera(const int x, const int y)
 {
 	this->setPosition(this->getPosition().x + x, this->getPosition().y + y);
 	this->move(x, y);
+}
+
+bool Camera::ChangeZoom(std::shared_ptr<sf::RenderWindow> window)
+{
+	this->setSize(window->getSize().x * this->currentZoom, window->getSize().y * this->currentZoom);
+	
+	return true;
 }

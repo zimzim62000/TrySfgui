@@ -18,9 +18,13 @@ void stage_one::Update(std::shared_ptr<GameInterface> GameInterface, std::shared
 
 void stage_one::Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
 {
+	window->setView(*mapGame->camera);
+
 	window->draw(*mapGame);
 
 	window->draw(*mapGame->caseMouse);
+
+	window->setView(window->getDefaultView());
 
 	GameInterface->Render(window);
 }
