@@ -20,6 +20,7 @@ bool GameInterface::Update(std::shared_ptr<sf::RenderWindow> window)
 
 bool GameInterface::Render(std::shared_ptr<sf::RenderWindow> window)
 {
+	window->draw(*this->gameSpeed->blackMenu);
 	window->draw(*this->gameSpeed);
 	window->draw(*this->gameSpeed->speedText);
 	window->draw(*this->gameSpeed->counterSecondText);

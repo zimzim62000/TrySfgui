@@ -25,6 +25,7 @@ public:
 	std::shared_ptr<sf::Text> fpsText;
 	std::shared_ptr<sf::Text> counterText;
 	std::shared_ptr<sf::Text> pauseText;
+	std::shared_ptr<sf::RectangleShape> blackMenu;
 private:
 	void generateSprite();
 	std::shared_ptr<sf::Font> font;

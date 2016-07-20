@@ -42,7 +42,7 @@ public:
 
 	void Load(std::string filename);
 
-	void Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window);
+	void Update(std::shared_ptr<GameInterface> GameInterface);
 
 	std::shared_ptr<MapTile> getAtThisPosition(const int x, const int y);
 
@@ -50,22 +50,27 @@ public:
 
 	std::pair<int, int> getPositionAvailable();
 
-	bool MouseMove();
+	bool KeyPressed(const sf::Event event);
 
-	bool MoveMouse(const float x, const float y);
+	bool MouseWheelScrolledMove(const sf::Event event);
 
-	bool CheckCamera(std::shared_ptr<sf::RenderWindow> window);
+	bool MoveMouse();
+
+	bool MoveMouse(const int x, const int y);
+
+	bool CheckCamera();
 
 	~MapGame();
 
 	std::string tileSet;
-	int width, height, tileWidth, tileHeight;
+	int width, height, tileWidth, tileHeight, nbTitleWidth, nbTitleHeight;
 	int* data;
 	int* defaultData;
 	bool mouseOnMove;
 	enum
 	{
-		WHITE = 1, BLACK = 0
+		MoveSpeed = 2,
+		MoveMouseBorder = 200
 	};
 
 	std::shared_ptr<sf::RectangleShape> caseMouse;
@@ -80,6 +85,5 @@ private:
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image> tileSetTexture;
 
-	std::shared_ptr<MapTile> black_case;
-	std::shared_ptr<MapTile> white_case;
+	std::shared_ptr<sf::RenderWindow> window;
 };

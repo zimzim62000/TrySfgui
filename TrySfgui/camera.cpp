@@ -1,10 +1,16 @@
 #include "camera.h"
+#include <iostream>
 
-Camera::Camera()
+Camera::Camera(std::shared_ptr<sf::RenderWindow> window) : sf::View::View()
 {
-	this->zoom = 0;
-	this->currentZoom = 2;
+	this->window = window;
+	this->zoom = -5;
+	this->currentZoom = ZOOMMIN;
 	this->setPosition(0, 0);
+	this->reset(sf::FloatRect(0, 0, window->getSize().x * this->currentZoom, window->getSize().y* this->currentZoom));
+
+	this->zoomMax = false;
+	this->zoomMin = true;
 }
 
 /*
@@ -34,9 +40,47 @@ void Camera::MoveCamera(const int x, const int y)
 	this->move(x, y);
 }
 
-bool Camera::ChangeZoom(std::shared_ptr<sf::RenderWindow> window)
+bool Camera::ResetCamera()
 {
-	this->setSize(window->getSize().x * this->currentZoom, window->getSize().y * this->currentZoom);
+	this->setCenter(sf::Vector2f(this->x + this->getSize().x / 2, this->y + this->getSize().y / 2));
 	
 	return true;
+}
+
+bool Camera::MouseWheelScrolledMove(const float value)
+{
+	if (value < 0) {
+		if (this->zoomMin && this->zoom < -5) {
+			this->zoom = -5;
+		}
+		this->zoom++;
+	}
+	else if (value > 0) {
+		if(this->zoomMax && this->zoom > 5) {
+			this->zoom = 5;
+		}
+		this->zoom--;
+	}
+	
+	if (this->zoom == 0) {
+		this->currentZoom = ZOOMMID;
+		this->zoomMax = false;
+		this->zoomMin = false;
+		return true;
+	}else if (this->zoom == 5 && !this->zoomMax) {
+		this->currentZoom = ZOOMMAX;
+		this->zoom = 5;
+		this->zoomMax = true;
+		this->zoomMin = false;
+		return true;
+	}else if (this->zoom == -5 && !this->zoomMin) {
+		this->currentZoom = ZOOMMIN;
+		this->zoom = -5;
+		this->zoomMin = true;
+		this->zoomMax = false;
+		return true;
+	}
+	
+
+	return false;
 }

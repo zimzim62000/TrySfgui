@@ -69,6 +69,9 @@ void GameSpeed::Initialize(std::shared_ptr<sf::RenderWindow> window)
 	this->fpsText->setPosition(10 , this->fpsText->getGlobalBounds().height / 2 + this->counterSecondText->getGlobalBounds().height*2);
 	this->fpsText->setColor(sf::Color::Red);
 
+	this->blackMenu = std::make_shared<sf::RectangleShape>(sf::Vector2f(this->speedText->getGlobalBounds().width, this->speedText->getGlobalBounds().height*6));
+	this->blackMenu->setFillColor(sf::Color::Black);
+
 	this->generateSprite();
 
 	this->setPosition(window->getSize().x - 384, 0);

@@ -13,7 +13,7 @@ void stage_one::Update(std::shared_ptr<GameInterface> GameInterface, std::shared
 	if (GameInterface->gameSpeed->Paused()) {
 		this->value = 1;
 	}
-	mapGame->Update(GameInterface, window);
+	mapGame->Update(GameInterface);
 }
 
 void stage_one::Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
