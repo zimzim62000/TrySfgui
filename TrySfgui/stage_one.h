@@ -5,6 +5,7 @@
 #include <memory>
 #include "engine.h"
 #include "camera.h"
+#include "entity.h"
 
 class stage_one : public tiny_state
 {
@@ -16,6 +17,7 @@ public:
 	void Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame);
 
 	void Destroy(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame);
-private:
 
+	std::shared_ptr<Entity> Player;
+private:
 };

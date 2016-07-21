@@ -19,6 +19,8 @@ Engine::Engine()
 
 	//init gameState 
 	this->gameState = std::make_shared<game_state>();
+
+
 }
 
 bool Engine::SetState(std::shared_ptr<tiny_state> state)

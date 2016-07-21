@@ -10,6 +10,8 @@ void stage_loading::Initialize(std::shared_ptr<GameInterface> GameInterface, std
 	texture->loadFromFile("Graphics/Images/loading.png");
 	this->loading->setTexture(*texture);
 	this->loading->setPosition(window->getSize().x/2-this->loading->getGlobalBounds().width/2, 0);
+
+
 }
 
 void stage_loading::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
