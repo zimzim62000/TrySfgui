@@ -19,8 +19,6 @@ Engine::Engine()
 
 	//init gameState 
 	this->gameState = std::make_shared<game_state>();
-
-
 }
 
 bool Engine::SetState(std::shared_ptr<tiny_state> state)
@@ -112,8 +110,27 @@ bool Engine::PollEvent()
 			this->mapGame->MouseWheelScrolledMove(event);
 		}
 
+		if (event.type == sf::Event::MouseButtonPressed)
+		{
+			if (event.mouseButton.button == sf::Mouse::Right)
+			{
+
+			}
+			if (event.mouseButton.button == sf::Mouse::Left)
+			{
+
+			}
+		}
+
+
+
 		if (event.type == sf::Event::KeyPressed)
 		{
+			if (event.key.code == sf::Keyboard::F1) {
+				this->debug = !this->debug;
+				this->gameInterface->debug = this->debug;
+			}
+
 			this->mapGame->KeyPressed(event);
 		}
 

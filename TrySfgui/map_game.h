@@ -1,14 +1,18 @@
 #pragma once
 
+#define Class GameInterface;
+#define Class MapTile;
+#define Class Camera;
+
+#define Class std::shared_ptr<GameInterface>;
+#define Class std::shared_ptr<MapTile>;
+#define Class std::shared_ptr<Camera>;
 
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <queue>
-#include "map_tile.h"
 #include <memory>
-#include "game_interface.h"
 #include <vector>
-#include "camera.h"
 
 struct noeud {
 	float cout_g, cout_h, cout_f;
@@ -42,13 +46,13 @@ public:
 
 	void Load(std::string filename);
 
-	void Update(std::shared_ptr<GameInterface> GameInterface);
+	void Update(std::shared_ptr<GameInterface> gameInterface);
 
 	std::shared_ptr<MapTile> getAtThisPosition(const int x, const int y);
 
 	std::shared_ptr<MapTile> getAtThisPositionNoeud(const int x, const int y);
 
-	std::pair<int, int> getPositionAvailable();
+	std::pair<int, int> getHousePosition();
 
 	bool KeyPressed(const sf::Event event);
 
@@ -79,11 +83,11 @@ public:
 
 	std::shared_ptr<Camera> camera;
 
+	std::shared_ptr<sf::RenderWindow> window;
+
 private:
 	void MapGame::GenerateSprite();
 
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image> tileSetTexture;
-
-	std::shared_ptr<sf::RenderWindow> window;
 };

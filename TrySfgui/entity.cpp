@@ -1,13 +1,13 @@
 #include "entity.h"
 #include <iostream>
-
-Entity::Entity()
-{
-	this->texture = std::make_shared<sf::Texture>();
-}
+#include "game_interface.h"
+#include "map_game.h"
+#include "task.h"
+#include "todo_list.h"
 
 Entity::Entity(const int x, const int y)
 {
+	this->todoList = std::make_shared<TodoList>();
 	this->texture = std::make_shared<sf::Texture>();
 	this->setPosition(x, y);
 }
@@ -40,12 +40,29 @@ bool Entity::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_pt
 {
 	this->countAnimated += GameInterface->gameSpeed->getDeltaTime();
 	if (this->countAnimated > 0.1f) {
-		int left = this->getTextureRect().left + this->tileWidth;
-		if (left >= this->tileWidth*this->nbTileWidth) {
-			left = 0;
+
+		if(this->stop){
+			int left = this->getTextureRect().left + this->tileWidth;
+			if (left >= this->tileWidth*this->nbTileWidth) {
+				left = 0;
+			}
+			this->setTextureRect(sf::IntRect(left, this->getTextureRect().top, this->tileWidth, this->tileHeight));
+			this->countAnimated = 0;
 		}
-		this->setTextureRect(sf::IntRect(left, this->getTextureRect().top, this->tileWidth, this->tileHeight));
-		this->countAnimated = 0;
 	}
 	return true;
+}
+
+bool Entity::Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
+{
+	return true;
+}
+
+bool Entity::AddTask(std::shared_ptr<Task> task)
+{
+	return this->todoList->addTask(task);
+}
+
+bool Entity::GetBusy() {
+	return (this->todoList->getTodoList().size() == 0 ? false : true);
 }

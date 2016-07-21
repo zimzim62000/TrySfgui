@@ -31,4 +31,5 @@ public:
 	std::shared_ptr<game_state> gameState;
 private:
 	bool PollEvent();
+	bool debug;
 };

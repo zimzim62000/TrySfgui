@@ -6,6 +6,9 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include "utility.h"
+#include "game_interface.h"
+#include "map_tile.h"
+#include "camera.h"
 
 using namespace rapidjson;
 
@@ -93,15 +96,19 @@ void MapGame::Load(std::string filename)
 				{
 					if(counter < 7){//Change if not 7 is Number of tile in Tileset
 						std::string tmpString = std::to_string(counter);
-						//auto tmpTile = std::make_shared<MapTile>(std::stoi(tileProperties[tmpString.c_str()]["passable"].GetString()), std::stoi(tileProperties[tmpString.c_str()]["weight"].GetString()));
-						auto tmpTile = std::make_shared<MapTile>(1, 100);
+						auto tmpTile = std::make_shared<MapTile>(std::stoi(tileProperties[tmpString.c_str()]["passable"].GetString()), std::stoi(tileProperties[tmpString.c_str()]["weight"].GetString()));
+						if (tileProperties[tmpString.c_str()]["house"].IsString()) {
+							tmpTile->SetHouse();
+						}
+						if (tileProperties[tmpString.c_str()]["carpark"].IsString()) {
+							tmpTile->SetCarpark();
+						}
 						tmpTile->create(this->tileWidth, this->tileHeight);
 						tmpTile->copy(*this->tileSetTexture, 0, 0, sf::IntRect(k * this->tileWidth, j * this->tileHeight, this->tileWidth, this->tileHeight), true);
 						this->Tiles.push_back(tmpTile);
 					}
 					counter++;
 				}
-
 			}
 		}
 
@@ -127,7 +134,7 @@ void MapGame::GenerateSprite()
 	this->setTexture(*this->texture);
 }
 
-void MapGame::Update(std::shared_ptr<GameInterface> GameInterface)
+void MapGame::Update(std::shared_ptr<GameInterface> gameInterface)
 {
 	this->MoveMouse();
 }
@@ -142,20 +149,21 @@ std::shared_ptr<MapTile> MapGame::getAtThisPositionNoeud(const int x, const int 
 	return this->Tiles[this->data[x + y *  this->nbTitleWidth]];
 }
 
-std::pair<int, int> MapGame::getPositionAvailable()
+std::pair<int, int> MapGame::getHousePosition()
 {
 	int x, y;
 	bool find = false;
 	while (find == false)
 	{
-		x = utility::randInt(this->nbTitleWidth, false);
-		y = utility::randInt(this->nbTitleHeight, false);
-		if (this->getAtThisPositionNoeud(x, y)->passable == true) {
+		x = utility::randInt(this->nbTitleWidth, false) - 1;
+		y = utility::randInt(this->nbTitleHeight, false) - 1;
+		if (this->getAtThisPositionNoeud(x, y)->house == true) {
 			find = true;
 		}
 	}
 	return std::pair<int, int>(x, y);
 }
+
 
 bool MapGame::MoveMouse(const int x, const int y)
 {
