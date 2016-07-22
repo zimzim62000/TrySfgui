@@ -1,23 +1,30 @@
+#ifndef STAGEONE
+
+#define STAGEONE
+
 #pragma once
 
-#include "game_state.h"
-#include "map_game.h"
-#include <memory>
-#include "engine.h"
-#include "camera.h"
-#include "entity.h"
-#include "entity_manager.h"
+namespace sf {
+	class RenderWindow;
+};
+class EntityManager;
+class GameInterface;
+class MapGame;
+class Camera;
+
+#include "tiny_state.h"
 
 class stage_one : public tiny_state
 {
 public:
-	void Initialize(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame);
+	void Initialize(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager);
 
-	void Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame);
+	void Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager);
 
-	void Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame);
+	void Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager);
 
-	void Destroy(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame);
+	void Destroy(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager);
 private:
-	std::shared_ptr<EntityManager> entityManager;
 };
+
+#endif STAGEONE

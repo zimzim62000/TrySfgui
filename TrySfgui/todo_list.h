@@ -1,6 +1,10 @@
+#ifndef TODOLIST
+
+#define TODOLIST
+
 #pragma once
 
-#define Class Task;
+class Task;
 #include <vector>
 #include <queue>
 #include <memory>
@@ -18,3 +22,5 @@ public:
 private:
 	std::queue<std::shared_ptr<Task>> todoList;
 };
+
+#endif TODOLIST

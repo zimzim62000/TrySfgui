@@ -1,7 +1,22 @@
+#ifndef GAMESPEED
+
+#define GAMESPEED
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
+/*
+namespace sf {
+	class Font;
+	class Texture;
+	class RenderWindow;
+	class Image;
+	class RectangleShape;
+}
+*/
+
 #include <memory>
+
 
 class GameSpeed : public sf::Sprite
 {
@@ -37,3 +52,5 @@ private:
 	int gameSpeed, gameSpeedMax, gameSpeedMin, tileWidth, tileHeight;
 	bool gamePause, subtractKey, addKey, echapKey, gameTick;
 };
+
+#endif GAMESPEED

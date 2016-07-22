@@ -1,4 +1,5 @@
 #include "game_interface.h"
+
 #include "game_speed.h"
 #include "mouse_pointer.h"
 #include <SFML/Graphics.hpp>
@@ -32,6 +33,11 @@ bool GameInterface::Render(std::shared_ptr<sf::RenderWindow> window)
 		window->draw(*this->gameSpeed->fpsText);
 		window->draw(*this->mousePointer);
 	}
+	if (this->entityActive)
+	{
+		window->draw(*this->gameSpeed->blackMenu);
+	}
+
 	window->draw(*this->gameSpeed);
 
 	return true;
@@ -40,6 +46,26 @@ bool GameInterface::Render(std::shared_ptr<sf::RenderWindow> window)
 void GameInterface::Destroy(std::shared_ptr<sf::RenderWindow>  window)
 {
 	this->gameSpeed.reset();
+}
+
+void GameInterface::setPause(const bool paused)
+{
+	this->gameSpeed->SetPause(paused);
+}
+
+float GameInterface::GetDeltaTime() const
+{
+	return this->gameSpeed->getDeltaTime();
+}
+
+bool GameInterface::Paused() const
+{
+	return this->gameSpeed->Paused();
+}
+
+void GameInterface::SetDeltaTime(const float dt)
+{
+	this->gameSpeed->setDeltaTime(dt);
 }
 
 
@@ -51,10 +77,16 @@ bool GameInterface::EntityActive()
 bool GameInterface::SetEntity(std::shared_ptr<Entity> entity)
 {
 	this->entity = entity;
+
+	this->entityActive = true;
+	
+	return true;
 }
 
 
 bool GameInterface::ResetEntity()
 {
 	this->entityActive = false;
+
+	return true;
 }

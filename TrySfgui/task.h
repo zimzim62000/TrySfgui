@@ -1,8 +1,16 @@
+#ifndef TASK
+
+#define TASK
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
 #include <string>
-
+/*
+namespace sf {
+	class Vector2f;
+};
+*/
 
 class Task
 {
@@ -15,3 +23,5 @@ public:
 	sf::Vector2f target;
 	bool done;
 };
+
+#endif TASK

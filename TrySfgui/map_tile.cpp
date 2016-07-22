@@ -1,6 +1,7 @@
 #include "map_tile.h"
+#include <SFML/Graphics.hpp>
 
-MapTile::MapTile(const bool passable, const int weight) : Image()
+MapTile::MapTile(const bool passable, const int weight) :  sf::Image()
 {
 	this->passable = passable;
 	this->weight = weight;

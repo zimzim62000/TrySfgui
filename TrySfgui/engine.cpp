@@ -1,6 +1,12 @@
 #include "engine.h"
+#include <SFML/Graphics.hpp>
 #include "stage_loading.h"
 #include "stage_one.h"
+#include "map_game.h"
+#include "game_interface.h"
+#include "game_state.h"
+#include "utility.h"
+#include "entity_manager.h"
 
 Engine::Engine()
 {
@@ -17,6 +23,9 @@ Engine::Engine()
 	//init mapgame
 	this->mapGame = std::make_shared<MapGame>(window);
 
+	//init entityManager
+	this->entityManager = std::make_shared<EntityManager>();
+
 	//init gameState 
 	this->gameState = std::make_shared<game_state>();
 }
@@ -27,6 +36,7 @@ bool Engine::SetState(std::shared_ptr<tiny_state> state)
 	this->gameState->SetWindow(this->window);
 	this->gameState->SetMapGame(this->mapGame);
 	this->gameState->SetGameInterface(this->gameInterface);
+	this->gameState->SetEntityManager(this->entityManager);
 	this->gameState->SetState(this->state);
 	return true;
 }
@@ -114,15 +124,17 @@ bool Engine::PollEvent()
 		{
 			if (event.mouseButton.button == sf::Mouse::Right)
 			{
-
+				this->gameInterface->ResetEntity();
 			}
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-
+				std::pair<int, int> pos = this->mapGame->GetReelPosition(event.mouseButton.x, event.mouseButton.y);
+				if (this->entityManager->GetAtThisPositionString(pos.first, pos.second) != "")
+				{
+					this->gameInterface->SetEntity(this->entityManager->GetAtThisPosition(pos.first, pos.second));
+				}
 			}
 		}
-
-
 
 		if (event.type == sf::Event::KeyPressed)
 		{
@@ -135,10 +147,10 @@ bool Engine::PollEvent()
 		}
 
 		if (event.type == sf::Event::LostFocus)
-			this->gameInterface->gameSpeed->SetPause(true);
+			this->gameInterface->setPause(true);
 
 		if (event.type == sf::Event::GainedFocus)
-			this->gameInterface->gameSpeed->SetPause(false);
+			this->gameInterface->setPause(false);
 
 	}
 

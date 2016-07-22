@@ -1,12 +1,14 @@
+#ifndef MAPGAME
+
+#define MAPGAME
+
 #pragma once
 
-#define Class GameInterface;
-#define Class MapTile;
-#define Class Camera;
+class GameInterface;
+class MapTile;
 
-#define Class std::shared_ptr<GameInterface>;
-#define Class std::shared_ptr<MapTile>;
-#define Class std::shared_ptr<Camera>;
+//class Camera;
+#include "camera.h"
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -47,6 +49,8 @@ public:
 	void Load(std::string filename);
 
 	void Update(std::shared_ptr<GameInterface> gameInterface);
+
+	std::pair<int,int> GetReelPosition(const int x, const int y);
 
 	std::shared_ptr<MapTile> getAtThisPosition(const int x, const int y);
 
@@ -91,3 +95,5 @@ private:
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image> tileSetTexture;
 };
+
+#endif MAPGAME

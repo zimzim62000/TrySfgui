@@ -1,7 +1,9 @@
+#include "map_game.h"
+
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "map_game.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
@@ -261,4 +263,9 @@ bool MapGame::MoveMouse()
 MapGame::~MapGame()
 {
 
+}
+
+std::pair<int, int> MapGame::GetReelPosition(const int x, const int y)
+{
+	return std::pair<int, int>(x *  this->camera->currentZoom + this->camera->getPosition().x, y *  this->camera->currentZoom + this->camera->getPosition().y);
 }

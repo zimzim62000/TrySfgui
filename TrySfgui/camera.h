@@ -1,8 +1,11 @@
+#ifndef CAMERA
+
+#define CAMERA
+
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <memory>
-
+#include <SFML/Graphics.hpp>
 
 class Camera : public sf::View
 {
@@ -27,3 +30,5 @@ private:
 
 	bool zoomMax, zoomMin;
 };
+
+#endif CAMERA

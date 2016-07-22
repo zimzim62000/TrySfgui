@@ -38,7 +38,7 @@ void Entity::Load(const std::string name, const int tileWidth, const int tileHei
 
 bool Entity::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
-	this->countAnimated += GameInterface->gameSpeed->getDeltaTime();
+	this->countAnimated += GameInterface->GetDeltaTime();
 	if (this->countAnimated > 0.1f) {
 
 		if(this->stop){
@@ -65,4 +65,14 @@ bool Entity::AddTask(std::shared_ptr<Task> task)
 
 bool Entity::GetBusy() {
 	return (this->todoList->getTodoList().size() == 0 ? false : true);
+}
+
+std::string Entity::GetName() const
+{
+	return this->name;
+}
+
+std::shared_ptr<sf::Texture> Entity::GetTexture() const
+{
+	return this->texture;
 }

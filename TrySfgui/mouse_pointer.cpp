@@ -1,5 +1,7 @@
 #include "mouse_pointer.h"
 
+#include <SFML/Graphics.hpp>
+
 MousePointer::MousePointer() :sf::CircleShape::CircleShape(8)
 {
 	this->setFillColor(sf::Color(150, 50, 250));

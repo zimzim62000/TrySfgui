@@ -1,9 +1,13 @@
+#ifndef ENTITY
+
+#define ENTITY
+
 #pragma once
 
-#define Class GameInterface;
-#define Class MapGame;
-#define Class TodoList;
-#define Class Task;
+class GameInterface;
+class MapGame;
+class TodoList;
+class Task;
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -20,6 +24,8 @@ public:
 	void Load(const std::string name);
 	void Load(const std::string name, const int tileWidth, const int tileHeight, const int nbWidthTile, const int nbHeightTile);
 	bool AddTask(std::shared_ptr<Task> task);
+	std::string GetName() const;
+	std::shared_ptr<sf::Texture> GetTexture() const;
 
 	bool GetBusy();
 
@@ -36,3 +42,5 @@ protected:
 	float countAnimated = 0;
 	bool stop = true;
 };
+
+#endif ENTITY

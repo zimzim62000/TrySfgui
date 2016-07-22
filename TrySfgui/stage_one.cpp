@@ -1,12 +1,18 @@
 #include "stage_one.h"
 
-void stage_one::Initialize(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
+#include "map_game.h"
+#include <memory>
+#include "engine.h"
+#include "entity.h"
+#include "game_interface.h"
+#include "entity_manager.h"
+
+
+void stage_one::Initialize(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)
 {
 	gameInterface->Initialize(window);
 
 	mapGame->Load("map.json");
-
-	this->entityManager = std::make_shared<EntityManager>();
 
 	std::pair<int, int> pos;
 	pos = mapGame->getHousePosition();
@@ -14,27 +20,27 @@ void stage_one::Initialize(std::shared_ptr<GameInterface> gameInterface, std::sh
 	auto Player = std::make_shared<Entity>(pos.first*mapGame->tileWidth, pos.second*mapGame->tileHeight);
 	Player->Load("player.png", 128, 128, 6, 1);
 
-	this->entityManager->Add("player", Player);	
+	EntityManager->Add("player", Player);
 }
 
-void stage_one::Update(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
+void stage_one::Update(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)
 {
 	gameInterface->Update(window);
-	if (gameInterface->gameSpeed->Paused()) {
+	if (gameInterface->Paused()) {
 		this->value = 1;
 	}
 	mapGame->Update(gameInterface);
 
-	this->entityManager->Update(gameInterface, mapGame);
+	EntityManager->Update(gameInterface, mapGame);
 }
 
-void stage_one::Render(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
+void stage_one::Render(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)
 {
 	window->setView(*mapGame->camera);
 
 	window->draw(*mapGame);
 
-	this->entityManager->Render(gameInterface, mapGame);
+	EntityManager->Render(gameInterface, mapGame);
 
 	window->draw(*mapGame->caseMouse);
 
@@ -43,7 +49,7 @@ void stage_one::Render(std::shared_ptr<GameInterface> gameInterface, std::shared
 	gameInterface->Render(window);
 }
 
-void stage_one::Destroy(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
+void stage_one::Destroy(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)
 {
-
+	EntityManager->Reset();
 }

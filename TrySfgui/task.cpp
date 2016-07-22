@@ -1,6 +1,9 @@
 #include "task.h"
 
-
+/*
+#include <SFML/Graphics.hpp>
+#include <string>
+*/
 
 Task::Task()
 {

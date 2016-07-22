@@ -1,3 +1,7 @@
+#ifndef MAPTILE
+
+#define MAPTILE
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
@@ -11,3 +15,5 @@ public:
 	void SetHouse();
 	void SetCarpark();
 };
+
+#endif MAPTILE
