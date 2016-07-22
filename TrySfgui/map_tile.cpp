@@ -7,6 +7,8 @@ MapTile::MapTile(const bool passable, const int weight) :  sf::Image()
 	this->weight = weight;
 	this->house = false;
 	this->carpark = false;
+	this->fields = false;
+	this->storehouse = false;
 }
 
 void MapTile::SetHouse()
@@ -17,4 +19,13 @@ void MapTile::SetHouse()
 void MapTile::SetCarpark()
 {
 	this->carpark = true;
+}
+void MapTile::SetFields()
+{
+	this->fields = true;
+}
+
+void MapTile::SetStorehouse()
+{
+	this->storehouse = true;
 }

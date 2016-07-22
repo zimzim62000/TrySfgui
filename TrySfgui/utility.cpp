@@ -1,5 +1,9 @@
 #include "utility.h"
 
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <SFML/Graphics.hpp>
 
 utility::utility()
 {

@@ -4,11 +4,12 @@
 #include "mouse_pointer.h"
 #include <SFML/Graphics.hpp>
 #include "entity.h"
-
+#include "active_entity.h"
 
 GameInterface::GameInterface()
 {
 	this->gameSpeed = std::make_shared<GameSpeed>();
+	this->activeEntity = std::make_shared<ActiveEntity>();
 }
 
 void GameInterface::Initialize(std::shared_ptr<sf::RenderWindow> window)
@@ -20,6 +21,7 @@ void GameInterface::Initialize(std::shared_ptr<sf::RenderWindow> window)
 
 bool GameInterface::Update(std::shared_ptr<sf::RenderWindow> window)
 {
+	this->activeEntity->Update();
 	return this->gameSpeed->Update(window);
 }
 
@@ -35,7 +37,7 @@ bool GameInterface::Render(std::shared_ptr<sf::RenderWindow> window)
 	}
 	if (this->entityActive)
 	{
-		window->draw(*this->gameSpeed->blackMenu);
+		window->draw(*this->activeEntity);
 	}
 
 	window->draw(*this->gameSpeed);
@@ -76,7 +78,7 @@ bool GameInterface::EntityActive()
 
 bool GameInterface::SetEntity(std::shared_ptr<Entity> entity)
 {
-	this->entity = entity;
+	this->activeEntity->SetEntity(entity);
 
 	this->entityActive = true;
 	
@@ -89,4 +91,10 @@ bool GameInterface::ResetEntity()
 	this->entityActive = false;
 
 	return true;
+}
+
+
+std::shared_ptr<Entity> GameInterface::GetActiveEntity()
+{
+	return this->activeEntity->GetEntity();
 }

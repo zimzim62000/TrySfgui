@@ -7,6 +7,9 @@
 #include "game_state.h"
 #include "utility.h"
 #include "entity_manager.h"
+#include "entity.h"
+#include "task_manager.h"
+#include "task.h"
 
 Engine::Engine()
 {
@@ -28,6 +31,9 @@ Engine::Engine()
 
 	//init gameState 
 	this->gameState = std::make_shared<game_state>();
+
+	//init taskManager
+	this->taskManager = std::make_shared<TaskManager>();
 }
 
 bool Engine::SetState(std::shared_ptr<tiny_state> state)
@@ -124,14 +130,26 @@ bool Engine::PollEvent()
 		{
 			if (event.mouseButton.button == sf::Mouse::Right)
 			{
-				this->gameInterface->ResetEntity();
+				if (this->gameInterface->EntityActive()) {
+					this->gameInterface->ResetEntity();
+				}
 			}
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				std::pair<int, int> pos = this->mapGame->GetReelPosition(event.mouseButton.x, event.mouseButton.y);
-				if (this->entityManager->GetAtThisPositionString(pos.first, pos.second) != "")
-				{
-					this->gameInterface->SetEntity(this->entityManager->GetAtThisPosition(pos.first, pos.second));
+				std::pair<int, int> mousePos = this->mapGame->GetReelPosition(event.mouseButton.x, event.mouseButton.y);
+				if(!this->gameInterface->EntityActive()){
+					if (this->entityManager->GetAtThisPositionString(mousePos.first, mousePos.second) != "")
+					{
+						this->gameInterface->SetEntity(this->entityManager->GetAtThisPosition(mousePos.first, mousePos.second));
+					}
+				}
+				else {
+					if (this->mapGame->GetMapPosition(mousePos.first, mousePos.second) != this->mapGame->GetMapPosition(this->gameInterface->GetActiveEntity()->getPosition().x, this->gameInterface->GetActiveEntity()->getPosition().y))
+					{
+						auto task = this->taskManager->CreateTask(1);
+						task->SetTaget(this->mapGame->GetMapPosition(mousePos.first, mousePos.second));
+						this->gameInterface->GetActiveEntity()->AddTask(task, this->gameInterface, this->mapGame);
+					}
 				}
 			}
 		}

@@ -11,6 +11,7 @@
 #include "game_interface.h"
 #include "map_tile.h"
 #include "camera.h"
+#include <math.h>
 
 using namespace rapidjson;
 
@@ -91,24 +92,25 @@ void MapGame::Load(std::string filename)
 
 			Value& tileProperties = tilesets[i]["tileproperties"];
 			int counter = 0;
-
-			for (int j = 0; j < 3; j++)
+			int tilecount = tilesets[i]["tilecount"].GetInt();
+			for (int j = 0; j < std::sqrt(tilecount); j++)
 			{
-				for (int k = 0; k < 3; k++)
+				for (int k = 0; k < std::sqrt(tilecount); k++)
 				{
-					if(counter < 7){//Change if not 7 is Number of tile in Tileset
-						std::string tmpString = std::to_string(counter);
-						auto tmpTile = std::make_shared<MapTile>(std::stoi(tileProperties[tmpString.c_str()]["passable"].GetString()), std::stoi(tileProperties[tmpString.c_str()]["weight"].GetString()));
-						if (tileProperties[tmpString.c_str()]["house"].IsString()) {
-							tmpTile->SetHouse();
-						}
-						if (tileProperties[tmpString.c_str()]["carpark"].IsString()) {
-							tmpTile->SetCarpark();
-						}
-						tmpTile->create(this->tileWidth, this->tileHeight);
-						tmpTile->copy(*this->tileSetTexture, 0, 0, sf::IntRect(k * this->tileWidth, j * this->tileHeight, this->tileWidth, this->tileHeight), true);
-						this->Tiles.push_back(tmpTile);
+					std::string tmpString = std::to_string(counter);
+					auto tmpTile = std::make_shared<MapTile>(std::stoi(tileProperties[tmpString.c_str()]["passable"].GetString()), std::stoi(tileProperties[tmpString.c_str()]["weight"].GetString()));
+					if (tileProperties[tmpString.c_str()]["house"].IsString()) {
+						tmpTile->SetHouse();
+					}else if (tileProperties[tmpString.c_str()]["carpark"].IsString()) {
+						tmpTile->SetCarpark();
+					}else if (tileProperties[tmpString.c_str()]["fields"].IsString()) {
+						tmpTile->SetFields();
+					}else if (tileProperties[tmpString.c_str()]["storehouse"].IsString()) {
+						tmpTile->SetStorehouse();
 					}
+					tmpTile->create(this->tileWidth, this->tileHeight);
+					tmpTile->copy(*this->tileSetTexture, 0, 0, sf::IntRect(k * this->tileWidth, j * this->tileHeight, this->tileWidth, this->tileHeight), true);
+					this->Tiles.push_back(tmpTile);
 					counter++;
 				}
 			}
@@ -239,18 +241,19 @@ bool MapGame::MoveMouse()
 	x = sf::Mouse::getPosition(*this->window).x;
 	y = sf::Mouse::getPosition(*this->window).y;
 	bool move = false;
-
-	if (x > 0 && x < MoveMouseBorder) {
+	if (x < MoveMouseBorder) {
 		this->camera->setPosition(this->camera->getPosition().x - MoveSpeed, this->camera->getPosition().y);
 		move = true;
-	}else if (x > this->window->getSize().x - MoveMouseBorder && x < this->window->getSize().x) {
+	}
+	else if (x > this->window->getSize().x - MoveMouseBorder) {
 		this->camera->setPosition(this->camera->getPosition().x + MoveSpeed, this->camera->getPosition().y);
 		move = true;
 	}
-	if (y > 0 && y < MoveMouseBorder) {
+	if (y < MoveMouseBorder) {
 		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y - MoveSpeed);
 		move = true;
-	}else if (y > this->window->getSize().y - MoveMouseBorder && y < this->window->getSize().y) {
+	}
+	else if (y > this->window->getSize().y - MoveMouseBorder) {
 		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y + MoveSpeed);
 		move = true;
 	}
@@ -268,4 +271,9 @@ MapGame::~MapGame()
 std::pair<int, int> MapGame::GetReelPosition(const int x, const int y)
 {
 	return std::pair<int, int>(x *  this->camera->currentZoom + this->camera->getPosition().x, y *  this->camera->currentZoom + this->camera->getPosition().y);
+}
+
+std::pair<int, int> MapGame::GetMapPosition(const int x, const int y) const
+{
+	return std::pair<int, int>(x / this->tileWidth, y / tileHeight);
 }

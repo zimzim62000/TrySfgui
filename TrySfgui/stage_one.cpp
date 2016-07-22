@@ -27,11 +27,13 @@ void stage_one::Update(std::shared_ptr<GameInterface> gameInterface, std::shared
 {
 	gameInterface->Update(window);
 	if (gameInterface->Paused()) {
-		this->value = 1;
-	}
-	mapGame->Update(gameInterface);
 
-	EntityManager->Update(gameInterface, mapGame);
+	}
+	else {
+		mapGame->Update(gameInterface);
+
+		EntityManager->Update(gameInterface, mapGame);
+	}
 }
 
 void stage_one::Render(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)

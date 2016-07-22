@@ -12,6 +12,7 @@ namespace sf{
 class Entity;
 class GameSpeed;
 class MousePointer;
+class ActiveEntity;
 
 
 class GameInterface
@@ -30,8 +31,8 @@ public:
 	bool EntityActive();
 	bool SetEntity(std::shared_ptr<Entity> entity);
 	bool ResetEntity();
+	std::shared_ptr<Entity> GetActiveEntity();
 	
-	std::shared_ptr<Entity> entity;
 	std::shared_ptr<GameSpeed> gameSpeed;
 	std::shared_ptr<MousePointer> mousePointer;
 
@@ -39,6 +40,7 @@ public:
 
 private:
 	bool entityActive = false;
+	std::shared_ptr<ActiveEntity> activeEntity;
 };
 
 #endif GAMEINTERFACE

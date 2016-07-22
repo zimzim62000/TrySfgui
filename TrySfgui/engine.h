@@ -14,6 +14,7 @@ class game_state;
 class GameInterface;
 class MapGame;
 class EntityManager;
+class TaskManager;
 
 #include <memory>
 
@@ -34,14 +35,17 @@ public:
 	bool Run();
 	bool SetState(std::shared_ptr<tiny_state> state);
 	bool SetState(const int value);
+private:
+	bool PollEvent();
+
 	std::shared_ptr<sf::RenderWindow> window;
 	std::shared_ptr<GameInterface> gameInterface;
 	std::shared_ptr<MapGame> mapGame;
 	std::shared_ptr<tiny_state> state;
 	std::shared_ptr<game_state> gameState;
 	std::shared_ptr<EntityManager> entityManager;
-private:
-	bool PollEvent();
+	std::shared_ptr<TaskManager> taskManager;
+
 	bool debug;
 };
 

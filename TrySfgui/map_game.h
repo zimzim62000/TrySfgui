@@ -16,17 +16,6 @@ class MapTile;
 #include <memory>
 #include <vector>
 
-struct noeud {
-	float cout_g, cout_h, cout_f;
-	std::pair<int, int> parent;
-};
-
-struct point {
-	int x, y;
-};
-
-typedef std::map< std::pair<int, int>, noeud> l_noeud;
-
 typedef enum
 {
 	NONE = -1,
@@ -55,6 +44,8 @@ public:
 	std::shared_ptr<MapTile> getAtThisPosition(const int x, const int y);
 
 	std::shared_ptr<MapTile> getAtThisPositionNoeud(const int x, const int y);
+
+	std::pair<int, int> GetMapPosition(const int x, const int y) const;
 
 	std::pair<int, int> getHousePosition();
 

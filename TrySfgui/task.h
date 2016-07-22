@@ -6,21 +6,23 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
-/*
-namespace sf {
-	class Vector2f;
-};
-*/
+
 
 class Task
 {
 public:
-	Task();
-	Task(const int idTask, const std::string name, const sf::Vector2f target);
-	Task(const int idTask, const std::string name);
-	int idTask;
+	Task(const int idTask, const int idTypeTask, const std::string name);
+	Task(const int idTask, const int idTypeTask, const std::string name, const std::pair<int, int>);
+	std::string GetTaskName() const;
+	std::pair<int, int> GetTarget() const;
+	void SetTaget(std::pair<int, int> target);
+	int GetIdTypeTask() const;
+	bool Done() const;
+	void Task::SetDone();
+protected:
+	int idTask, idTypeTask;
 	std::string name;
-	sf::Vector2f target;
+	std::pair<int, int> target;
 	bool done;
 };
 

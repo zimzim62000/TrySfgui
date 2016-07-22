@@ -2,13 +2,13 @@
 #define UTILITY_ZIM
 
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
-#include "utility.h"
-#include <cmath>
-#include <iostream>
-#include <string>
+/*
+namespace sf{
+	class Vector2f;
+};
+*/
 
 #define PI 3.14159265359
 
