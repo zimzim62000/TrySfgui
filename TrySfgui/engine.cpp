@@ -10,6 +10,10 @@
 #include "entity.h"
 #include "task_manager.h"
 #include "task.h"
+#include "map_tile.h"
+#include "task.h"
+#include <iostream>
+
 
 Engine::Engine()
 {
@@ -17,6 +21,7 @@ Engine::Engine()
 	sf::ContextSettings antialiasing;
 	antialiasing.antialiasingLevel = 32;
 	this->window = std::make_shared<sf::RenderWindow>(sf::VideoMode(Config::screen_width, Config::screen_height), "Try Sf Gui", sf::Style::Close, antialiasing);
+	this->window->setFramerateLimit(60);
 	//this->window = std::make_shared<sf::RenderWindow>(sf::VideoMode(Config::screen_width, Config::screen_height), "Try Sf Gui", sf::Style::Fullscreen, antialiasing);
 	this->window->setPosition(sf::Vector2i(0, 0));
 
@@ -128,30 +133,7 @@ bool Engine::PollEvent()
 
 		if (event.type == sf::Event::MouseButtonPressed)
 		{
-			if (event.mouseButton.button == sf::Mouse::Right)
-			{
-				if (this->gameInterface->EntityActive()) {
-					this->gameInterface->ResetEntity();
-				}
-			}
-			if (event.mouseButton.button == sf::Mouse::Left)
-			{
-				std::pair<int, int> mousePos = this->mapGame->GetReelPosition(event.mouseButton.x, event.mouseButton.y);
-				if(!this->gameInterface->EntityActive()){
-					if (this->entityManager->GetAtThisPositionString(mousePos.first, mousePos.second) != "")
-					{
-						this->gameInterface->SetEntity(this->entityManager->GetAtThisPosition(mousePos.first, mousePos.second));
-					}
-				}
-				else {
-					if (this->mapGame->GetMapPosition(mousePos.first, mousePos.second) != this->mapGame->GetMapPosition(this->gameInterface->GetActiveEntity()->getPosition().x, this->gameInterface->GetActiveEntity()->getPosition().y))
-					{
-						auto task = this->taskManager->CreateTask(1);
-						task->SetTaget(this->mapGame->GetMapPosition(mousePos.first, mousePos.second));
-						this->gameInterface->GetActiveEntity()->AddTask(task, this->gameInterface, this->mapGame);
-					}
-				}
-			}
+			this->gameInterface->Click(event, this->entityManager, this->taskManager, this->mapGame);
 		}
 
 		if (event.type == sf::Event::KeyPressed)

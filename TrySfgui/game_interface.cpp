@@ -5,6 +5,12 @@
 #include <SFML/Graphics.hpp>
 #include "entity.h"
 #include "active_entity.h"
+#include "entity_manager.h"
+#include "task_manager.h"
+#include "map_game.h"
+#include "map_tile.h"
+#include "task.h"
+#include <iostream>
 
 GameInterface::GameInterface()
 {
@@ -19,9 +25,9 @@ void GameInterface::Initialize(std::shared_ptr<sf::RenderWindow> window)
 }
 
 
-bool GameInterface::Update(std::shared_ptr<sf::RenderWindow> window)
+bool GameInterface::Update(std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame)
 {
-	this->activeEntity->Update();
+	this->activeEntity->Update(mapGame);
 	return this->gameSpeed->Update(window);
 }
 
@@ -76,9 +82,9 @@ bool GameInterface::EntityActive()
 	return this->entityActive;
 }
 
-bool GameInterface::SetEntity(std::shared_ptr<Entity> entity)
+bool GameInterface::SetEntity(std::shared_ptr<Entity> entity, std::shared_ptr<MapGame> mapGame)
 {
-	this->activeEntity->SetEntity(entity);
+	this->activeEntity->SetEntity(entity, mapGame);
 
 	this->entityActive = true;
 	
@@ -97,4 +103,54 @@ bool GameInterface::ResetEntity()
 std::shared_ptr<Entity> GameInterface::GetActiveEntity()
 {
 	return this->activeEntity->GetEntity();
+}
+
+void GameInterface::Click(sf::Event &event, std::shared_ptr<EntityManager> entityManager, std::shared_ptr<TaskManager> taskManager, std::shared_ptr<MapGame> mapGame)
+{
+	if (event.mouseButton.button == sf::Mouse::Right)
+	{
+		//unselect entity
+		if (this->EntityActive()) {
+			this->ResetEntity();
+		}
+	}
+	if (event.mouseButton.button == sf::Mouse::Left)
+	{
+		std::pair<int, int> mousePos = mapGame->GetReelPosition(event.mouseButton.x, event.mouseButton.y);
+
+		//select entity
+		if (!this->EntityActive()) {
+			if (entityManager->GetAtThisPositionString(mousePos.first, mousePos.second) != "")
+			{
+				this->SetEntity(entityManager->GetAtThisPosition(mousePos.first, mousePos.second), mapGame);
+			}
+		}
+		else {
+
+			if (this->GetActiveEntity()->GetFloatRect().contains(mousePos.first, mousePos.second))
+			{
+				this->GetActiveEntity()->StopMovement();
+			}
+			else {
+
+				auto task = taskManager->CreateTask(1);
+				auto tile = mapGame->getAtThisPosition(mousePos.first, mousePos.second);
+				if (tile->GetHouse()) {
+					task->AddName("house");
+				}
+				else if (tile->GetStorehouse()) {
+					task->AddName("storehouse");
+				}
+				else if (tile->GetFields()) {
+					task->AddName("fields");
+				}
+				else if (tile->GetCarpark()) {
+					task->AddName("carpark");
+				}
+				task->SetTaget(mapGame->GetMapPosition(mousePos.first, mousePos.second));
+				this->GetActiveEntity()->AddTask(task, mapGame);
+				std::cout << "Add Move Task" << std::endl;
+			}
+		}
+	}
 }

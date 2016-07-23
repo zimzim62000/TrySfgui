@@ -16,6 +16,10 @@ public:
 	void SetCarpark();
 	void SetFields();
 	void SetStorehouse();
+	bool GetHouse() const;
+	bool GetCarpark() const;
+	bool GetFields() const;
+	bool GetStorehouse() const;
 };
 
 #endif MAPTILE

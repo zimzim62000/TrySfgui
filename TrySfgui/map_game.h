@@ -53,7 +53,7 @@ public:
 
 	bool MouseWheelScrolledMove(const sf::Event event);
 
-	bool MoveMouse();
+	bool MoveMouse(std::shared_ptr<GameInterface> gameInterface);
 
 	bool MoveMouse(const int x, const int y);
 
@@ -68,7 +68,7 @@ public:
 	bool mouseOnMove;
 	enum
 	{
-		MoveSpeed = 2,
+		MoveSpeed = 250,
 		MoveMouseBorder = 200
 	};
 
@@ -78,10 +78,12 @@ public:
 
 	std::shared_ptr<Camera> camera;
 
-	std::shared_ptr<sf::RenderWindow> window;
+	std::shared_ptr<sf::RenderWindow> GetWindow() const;
 
 private:
 	void MapGame::GenerateSprite();
+
+	std::shared_ptr<sf::RenderWindow> window;
 
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image> tileSetTexture;

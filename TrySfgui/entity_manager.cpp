@@ -32,7 +32,7 @@ void EntityManager::Render(std::shared_ptr<GameInterface> gameInterface, std::sh
 {
 	for (auto& iterator : this->entities) {
 		iterator.second->Render(gameInterface, mapGame);
-		mapGame->window->draw(*iterator.second);
+		mapGame->GetWindow()->draw(*iterator.second);
 	}
 }
 

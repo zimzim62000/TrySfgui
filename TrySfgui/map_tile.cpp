@@ -29,3 +29,23 @@ void MapTile::SetStorehouse()
 {
 	this->storehouse = true;
 }
+
+bool MapTile::GetHouse() const
+{
+	return this->house;
+}
+
+bool MapTile::GetCarpark() const
+{
+	return this->carpark;
+}
+
+bool  MapTile::GetFields() const
+{
+	return this->fields;
+}
+
+bool  MapTile::GetStorehouse() const
+{
+	return this->storehouse;
+}

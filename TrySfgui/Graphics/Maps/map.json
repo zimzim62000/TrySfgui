@@ -51,12 +51,12 @@
                 {
                  "house":"1",
                  "passable":"1",
-                 "weight":"50"
+                 "weight":"20"
                 },
              "3":
                 {
                  "passable":"1",
-                 "weight":"100"
+                 "weight":"50"
                 },
              "4":
                 {
@@ -73,7 +73,7 @@
                 {
                  "carpark":"1",
                  "passable":"1",
-                 "weight":"30"
+                 "weight":"20"
                 },
              "7":
                 {

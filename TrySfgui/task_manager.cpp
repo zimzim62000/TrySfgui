@@ -9,7 +9,7 @@ std::shared_ptr<Task> TaskManager::CreateTask(const int idTypeTask)
 {
 	switch (idTypeTask) {
 	case 1:
-		return std::make_shared<Task>(this->idTask, idTypeTask, "Moving Dud");
+		return std::make_shared<Task>(this->idTask, idTypeTask, "Moving At");
 		break;
 	default:
 		return std::make_shared<Task>(this->idTask, idTypeTask, "Smooking weed :)");

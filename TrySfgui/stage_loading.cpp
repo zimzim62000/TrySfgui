@@ -22,7 +22,7 @@ void stage_loading::Initialize(std::shared_ptr<GameInterface> GameInterface, std
 
 void stage_loading::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)
 {
-	GameInterface->Update(window);
+	GameInterface->Update(window, mapGame);
 
 	if(!GameInterface->Paused()){
 		this->counter += GameInterface->GetDeltaTime();

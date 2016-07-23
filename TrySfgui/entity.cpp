@@ -16,6 +16,13 @@ Entity::Entity(const int x, const int y)
 	this->setPosition(x, y);
 	this->velocity = sf::Vector2f(0, 0);
 	this->speed = 100;
+	this->typeEntity = 0;
+
+	this->targetEntity = std::make_shared<sf::CircleShape>(10);
+	this->targetEntity->setFillColor(sf::Color(150, 50, 250));
+	this->targetEntity->setOutlineThickness(2);
+	this->targetEntity->setOutlineColor(sf::Color(250, 150, 100));
+	this->targetEntity->setPosition(0, 0);
 }
 
 void Entity::Load(const std::string name)
@@ -44,40 +51,7 @@ void Entity::Load(const std::string name, const int tileWidth, const int tileHei
 
 bool Entity::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
-	if (this->todoList->countTodoList() != 0) {
-
-		switch (this->todoList->getFisrtTask()->GetIdTypeTask()) {
-		case 1:
-			if (!this->todoList->getFisrtTask()->Done())
-			{
-				if (this->velocity.x == 0 && this->velocity.y == 0)
-				{
-					this->targetOne = this->listPoint.front();
-					sf::Vector2f diff = utility::diffVecteur2(sf::Vector2f(this->targetOne.first, this->targetOne.second), sf::Vector2f(this->getPosition().x, this->getPosition().y));
-					this->velocity = utility::normalizeVecteur(diff);
-				}
-				float distanceX = abs(this->targetOne.first - this->getPosition().x);
-				float distanceY = abs(this->targetOne.second - this->getPosition().y);
-				float speedX = abs(this->velocity.x * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
-				float speedY = abs(this->velocity.y * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
-
-				if (distanceX <= speedX && distanceY <= speedY)
-				{
-					this->setPosition(this->targetOne.first, this->targetOne.second);
-					this->velocity.x = 0;
-					this->velocity.y = 0;
-					this->listPoint.pop();
-					if (this->listPoint.size() == 0)
-					{
-						this->todoList->deleteFirstTask();
-					}
-				}
-			}
-			break;
-			default:
-				break;
-		}		
-	}
+	this->UpdateTask(GameInterface, mapGame);
 
 	this->UpdateAnimation(GameInterface, mapGame);
 
@@ -86,23 +60,93 @@ bool Entity::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_pt
 	return true;
 }
 
-void Entity::RunTask(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
+void Entity::UpdateTask(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
+{
+	if (this->todoList->Size() != 0)
+	{
+		if (!this->todoList->GetTask()->GetRun()) {
+			this->RunTask(mapGame);
+		}
+
+		if (this->todoList->Size() != 0)
+		{
+			switch (this->todoList->GetTask()->GetIdTypeTask()) {
+			case 0:
+				break;
+			case 1:
+				if (!this->todoList->GetTask()->Done())
+				{
+					if (this->velocity.x == 0 && this->velocity.y == 0)
+					{
+						this->NextTarget = this->listPoint.front();
+						sf::Vector2f diff = utility::diffVecteur2(sf::Vector2f(this->NextTarget.first, this->NextTarget.second), sf::Vector2f(this->getPosition().x, this->getPosition().y));
+						this->velocity = utility::normalizeVecteur(diff);
+						if (isnan(this->velocity.x) || isnan(this->velocity.y)) {
+							this->velocity.x = 0;
+							this->velocity.y = 0;
+						}
+					}
+					float distanceX = abs(this->NextTarget.first - this->getPosition().x);
+					float distanceY = abs(this->NextTarget.second - this->getPosition().y);
+					float speedX = abs(this->velocity.x * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
+					float speedY = abs(this->velocity.y * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
+
+					if (distanceX <= speedX && distanceY <= speedY)
+					{
+						this->setPosition(this->NextTarget.first, this->NextTarget.second);
+						this->velocity.x = 0;
+						this->velocity.y = 0;
+						this->listPoint.pop_front();
+						if (this->NextTarget.first == this->todoList->GetTask()->GetTarget().first * mapGame->tileWidth && this->NextTarget.second == this->todoList->GetTask()->GetTarget().second * mapGame->tileHeight) {
+							this->todoList->DeleteTask();
+							std::cout << "delete task" << std::endl;
+						}
+						if (this->stopMovement) {
+							this->CancelTask();
+						}
+					}
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void Entity::RunTask(std::shared_ptr<MapGame> mapGame)
 {
 	auto pathFinding = std::make_shared<PathFinding>();
-
-	std::cout << "Find Road : " << int(this->getPosition().x / mapGame->tileWidth) << "--" << int(this->getPosition().y / mapGame->tileHeight) << "--" << this->todoList->getFisrtTask()->GetTarget().first << "--" << this->todoList->getFisrtTask()->GetTarget().second << std::endl;
-	switch (this->todoList->getFisrtTask()->GetIdTypeTask()) {
+	int x, y;
+	bool activate = false;
+	pathFinding->resetPath();
+	x = this->getPosition().x;
+	y = this->getPosition().y;
+	int posX = int(x / mapGame->tileWidth);
+	int posY = int(y / mapGame->tileHeight);
+	std::cout << "Find Road : " << posX << "--" << posY  << "--" << this->todoList->GetTask()->GetTarget().first << "--" << this->todoList->GetTask()->GetTarget().second << std::endl;
+	switch (this->todoList->GetTask()->GetIdTypeTask()) {
 	case 1:
-		pathFinding->findRoad(mapGame, int(this->getPosition().x / mapGame->tileWidth), int(this->getPosition().y / mapGame->tileHeight), this->todoList->getFisrtTask()->GetTarget().first, this->todoList->getFisrtTask()->GetTarget().second);
+		pathFinding->findRoad(mapGame, posX, posY, this->todoList->GetTask()->GetTarget().first, this->todoList->GetTask()->GetTarget().second);
 		while (pathFinding->chemin.size() > 0) {
 			point pt = pathFinding->chemin.front();
 			this->AddTarget(std::pair<int, int>(pt.x * mapGame->tileWidth, pt.y* mapGame->tileHeight));
 			pathFinding->chemin.pop_front();
+			activate = true;
 		}
 		break;
 	default:
 		break;
 
+	}
+	if(activate){
+		this->todoList->GetTask()->SetRun();
+		if (this->todoList->GetTask()->Target()) {
+			this->targetEntity->setPosition(this->todoList->GetTask()->GetTarget().first * mapGame->tileWidth, this->todoList->GetTask()->GetTarget().second * mapGame->tileHeight);
+		}
+	}
+	else {
+		this->todoList->DeleteTask();
 	}
 }
 
@@ -111,7 +155,6 @@ void Entity::UpdateAnimation(std::shared_ptr<GameInterface> GameInterface, std::
 {
 	this->countAnimated += GameInterface->GetDeltaTime();
 	if (this->countAnimated > 0.1f) {
-
 		if (this->stop) {
 			int left = this->getTextureRect().left + this->tileWidth;
 			if (left >= this->tileWidth*this->nbTileWidth) {
@@ -125,25 +168,27 @@ void Entity::UpdateAnimation(std::shared_ptr<GameInterface> GameInterface, std::
 
 void Entity::AddTarget(const std::pair<int, int> target)
 {
-	this->listPoint.push(target);
+	this->listPoint.push_back(target);
 }
 
 bool Entity::Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
+	if (this->GetTodoList()->Size() != 0) {
+		if (this->GetTask()->Target()) {
+			mapGame->GetWindow()->draw(*this->targetEntity);
+		}
+	}
+
 	return true;
 }
 
-bool Entity::AddTask(std::shared_ptr<Task> task, std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<MapGame> mapGame)
+bool Entity::AddTask(std::shared_ptr<Task> task, std::shared_ptr<MapGame> mapGame)
 {
-	if (this->todoList->addTask(task)) {
-		this->RunTask(gameInterface, mapGame);
-		return true;
-	}
-	return false;
+	return this->todoList->AddTask(task);
 }
 
 bool Entity::GetBusy() {
-	return (this->todoList->getTodoList().size() == 0 ? false : true);
+	return (this->todoList->Size() == 0 ? false : true);
 }
 
 std::string Entity::GetName() const
@@ -158,10 +203,31 @@ std::shared_ptr<sf::Texture> Entity::GetTexture() const
 
 std::shared_ptr<Task> Entity::GetTask() const
 {
-	return this->todoList->getFisrtTask();
+	return this->todoList->GetTask();
 }
 
 std::shared_ptr<TodoList> Entity::GetTodoList() const
 {
 	return this->todoList;
+}
+
+void Entity::StopMovement()
+{
+	this->stopMovement = true;
+}
+
+void Entity::CancelTask()
+{
+	this->todoList->CancelAllTask();
+	this->listPoint.clear();
+	this->velocity.x = 0;
+	this->velocity.y = 0;
+	this->stopMovement = false;
+	std::cout << "clear all task" << std::endl;
+}
+
+
+sf::FloatRect Entity::GetFloatRect() const
+{
+	return sf::FloatRect(this->getPosition().x, this->getPosition().y, this->getGlobalBounds().width, this->getGlobalBounds().height);
 }

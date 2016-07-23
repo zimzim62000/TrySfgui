@@ -9,6 +9,7 @@
 #include "rapidjson/stringbuffer.h"
 #include "utility.h"
 #include "game_interface.h"
+#include "game_speed.h"
 #include "map_tile.h"
 #include "camera.h"
 #include <math.h>
@@ -140,7 +141,7 @@ void MapGame::GenerateSprite()
 
 void MapGame::Update(std::shared_ptr<GameInterface> gameInterface)
 {
-	this->MoveMouse();
+	this->MoveMouse(gameInterface);
 }
 
 std::shared_ptr<MapTile> MapGame::getAtThisPosition(const int x, const int y)
@@ -235,26 +236,26 @@ bool MapGame::KeyPressed(const sf::Event event)
 	return true;
 }
 
-bool MapGame::MoveMouse()
+bool MapGame::MoveMouse(std::shared_ptr<GameInterface> gameInterface)
 {
 	int x, y;
 	x = sf::Mouse::getPosition(*this->window).x;
 	y = sf::Mouse::getPosition(*this->window).y;
 	bool move = false;
 	if (x < MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x - MoveSpeed, this->camera->getPosition().y);
+		this->camera->setPosition(this->camera->getPosition().x - MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom, this->camera->getPosition().y);
 		move = true;
 	}
 	else if (x > this->window->getSize().x - MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x + MoveSpeed, this->camera->getPosition().y);
+		this->camera->setPosition(this->camera->getPosition().x + MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom, this->camera->getPosition().y);
 		move = true;
 	}
 	if (y < MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y - MoveSpeed);
+		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y - MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom);
 		move = true;
 	}
 	else if (y > this->window->getSize().y - MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y + MoveSpeed);
+		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y + MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom);
 		move = true;
 	}
 	if (move) {
@@ -276,4 +277,10 @@ std::pair<int, int> MapGame::GetReelPosition(const int x, const int y)
 std::pair<int, int> MapGame::GetMapPosition(const int x, const int y) const
 {
 	return std::pair<int, int>(x / this->tileWidth, y / tileHeight);
+}
+
+
+std::shared_ptr<sf::RenderWindow> MapGame::GetWindow() const
+{
+	return this->window;
 }

@@ -6,28 +6,33 @@ TodoList::TodoList()
 
 }
 
-bool TodoList::addTask(std::shared_ptr<Task> task)
+bool TodoList::AddTask(std::shared_ptr<Task> task)
 {
-	this->todoList.push(task);
+	this->todoList.push_back(task);
 	return true;
 }
 
-std::queue<std::shared_ptr<Task>> TodoList::getTodoList()
+std::list<std::shared_ptr<Task>> TodoList::GetTodoList()
 {
 	return this->todoList;
 }
 
-void TodoList::deleteFirstTask()
+void TodoList::DeleteTask()
 {
-	this->todoList.pop();
+	this->todoList.pop_front();
 }
 
-int TodoList::countTodoList() const
+int TodoList::Size() const
 {
 	return this->todoList.size();
 }
 
-std::shared_ptr<Task> TodoList::getFisrtTask() const
+std::shared_ptr<Task> TodoList::GetTask() const
 {
 	return this->todoList.front();
+}
+
+void TodoList::CancelAllTask()
+{
+	this->todoList.clear();
 }

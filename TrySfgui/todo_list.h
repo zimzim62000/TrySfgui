@@ -6,21 +6,25 @@
 
 class Task;
 #include <vector>
-#include <queue>
+#include <list>
 #include <memory>
 
 class TodoList
 {
 public:
 	TodoList();
-	bool addTask(std::shared_ptr<Task> task);
-	std::queue<std::shared_ptr<Task>> getTodoList();
-	void deleteFirstTask();
-	int countTodoList() const;
-	std::shared_ptr<Task> getFisrtTask() const;
+	bool AddTask(std::shared_ptr<Task> task);
+	std::shared_ptr<Task> GetTask() const;
+
+	int Size() const;
+
+	void DeleteTask();
+	void TodoList::CancelAllTask();
+
+	std::list<std::shared_ptr<Task>> GetTodoList();
 
 private:
-	std::queue<std::shared_ptr<Task>> todoList;
+	std::list<std::shared_ptr<Task>> todoList;
 };
 
 #endif TODOLIST

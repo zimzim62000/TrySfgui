@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "task.h"
 #include "todo_list.h"
+#include "map_game.h"
 
 ActiveEntity::ActiveEntity() : sf::Drawable()
 {
@@ -31,17 +32,13 @@ ActiveEntity::ActiveEntity() : sf::Drawable()
 	this->background->setFillColor(sf::Color(255, 255, 255, 225));
 }
 
-void ActiveEntity::SetEntity(std::shared_ptr<Entity> entity)
+void ActiveEntity::SetEntity(std::shared_ptr<Entity> entity, std::shared_ptr<MapGame> mapGame)
 {
 	this->entity = entity;
 
 	this->spriteEntity->setTexture(*entity->GetTexture());
 	this->spriteEntity->setTextureRect(sf::IntRect(0, 0, entity->getGlobalBounds().width, entity->getGlobalBounds().height));
 	this->entityNameText->setString(this->entity->GetName());
-	if(this->entity->GetTodoList()->countTodoList() != 0){
-		this->entityTaskText->setString(this->entity->GetTask()->GetTaskName());
-	}
-
 	this->active = true;
 }
 
@@ -55,13 +52,22 @@ std::shared_ptr<Entity> ActiveEntity::GetEntity()
 	return this->entity;
 }
 
-void ActiveEntity::Update()
+void ActiveEntity::Update(std::shared_ptr<MapGame> mapGame)
 {
 	if (this->active)
 	{
-		if (this->entity->GetTodoList()->countTodoList() != 0)
+		if (this->entity->GetTodoList()->Size() != 0)
 		{
 			this->entityTaskText->setString(this->entity->GetTask()->GetTaskName());
 		}
 	}
+}
+
+
+void ActiveEntity::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(*this->background, states);
+	target.draw(*this->entityNameText, states);
+	target.draw(*this->entityTaskText, states);
+	target.draw(*this->spriteEntity, states);
 }

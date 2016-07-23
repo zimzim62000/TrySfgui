@@ -25,7 +25,7 @@ void stage_one::Initialize(std::shared_ptr<GameInterface> gameInterface, std::sh
 
 void stage_one::Update(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)
 {
-	gameInterface->Update(window);
+	gameInterface->Update(window, mapGame);
 	if (gameInterface->Paused()) {
 
 	}
