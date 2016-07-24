@@ -20,11 +20,15 @@ class Entity : public sf::Sprite
 public:
 	Entity::Entity(const int x, const int y);
 	
-	bool Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
-	bool Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
+	virtual bool Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
+	virtual bool Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
+	virtual bool GetBusy();
+
 	void Load(const std::string name);
 	void Load(const std::string name, const int tileWidth, const int tileHeight, const int nbWidthTile, const int nbHeightTile);
 	
+	void SetName(std::string name);
+		
 	bool AddTask(std::shared_ptr<Task> task, std::shared_ptr<MapGame> mapGame);
 	void CancelTask();
 	std::shared_ptr<Task> GetTask() const;
@@ -37,11 +41,12 @@ public:
 
 	sf::FloatRect GetFloatRect() const;
 
-	bool GetBusy();
-
+	
 	void ActiveEntity();
 	void DesactiveEntity();
 	bool ActiveEntity() const;
+	bool Movable() const;
+	bool Factory() const;
 
 protected:
 
@@ -77,6 +82,10 @@ protected:
 	int typeEntity;
 
 	bool activeEntity;
+
+	bool movable;
+
+	bool factory;
 };
 
 #endif ENTITY

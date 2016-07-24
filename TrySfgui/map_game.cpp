@@ -11,12 +11,13 @@
 #include "game_interface.h"
 #include "game_speed.h"
 #include "map_tile.h"
+#include "entity_tile.h"
 #include "camera.h"
 #include <math.h>
 
 using namespace rapidjson;
 
-MapGame::MapGame(std::shared_ptr<sf::RenderWindow> window)
+MapGame::MapGame(std::shared_ptr<sf::RenderWindow> window) : sf::Sprite()
 {
 	this->window = window;
 
@@ -34,7 +35,7 @@ MapGame::MapGame(std::shared_ptr<sf::RenderWindow> window)
 	this->nbTitleHeight = 1;
 }
 
-void MapGame::Load(std::string filename)
+bool MapGame::Load(std::string filename)
 {
 	std::ifstream mapFile("Graphics/Maps/" + filename);
 	std::string mapFileData((std::istreambuf_iterator<char>(mapFile)),
@@ -100,20 +101,34 @@ void MapGame::Load(std::string filename)
 				{
 					std::string tmpString = std::to_string(counter);
 					auto tmpTile = std::make_shared<MapTile>(std::stoi(tileProperties[tmpString.c_str()]["passable"].GetString()), std::stoi(tileProperties[tmpString.c_str()]["weight"].GetString()));
+					tmpTile->SetName("somewhere");
 					if (tileProperties[tmpString.c_str()]["house"].IsString()) {
 						tmpTile->SetHouse();
+						tmpTile->SetName("House");
 					}else if (tileProperties[tmpString.c_str()]["carpark"].IsString()) {
 						tmpTile->SetCarpark();
+						tmpTile->SetName("Carpark");
 					}else if (tileProperties[tmpString.c_str()]["fields"].IsString()) {
 						tmpTile->SetFields();
+						tmpTile->SetName("Fields");
 					}else if (tileProperties[tmpString.c_str()]["storehouse"].IsString()) {
 						tmpTile->SetStorehouse();
+						tmpTile->SetName("Storehouse");
 					}
 					tmpTile->create(this->tileWidth, this->tileHeight);
 					tmpTile->copy(*this->tileSetTexture, 0, 0, sf::IntRect(k * this->tileWidth, j * this->tileHeight, this->tileWidth, this->tileHeight), true);
-					this->Tiles.push_back(tmpTile);
+					this->tiles.push_back(tmpTile);
 					counter++;
 				}
+			}
+		}
+
+		int tmp;
+		for (int y(0); y < this->nbTitleHeight; y++) {
+			for (int x(0); x < this->nbTitleWidth; x++) {
+				tmp = this->data[x + y * this->nbTitleWidth];
+				auto sprite = std::make_shared<EntityTile>(x * this->tileWidth, y * this->tileHeight, this->tileWidth, this->tileHeight, this->tiles[tmp]);
+				this->entityTiles.push_back(sprite);
 			}
 		}
 
@@ -132,7 +147,7 @@ void MapGame::GenerateSprite()
 		{
 			int intTmp = this->data[x + y *  this->nbTitleWidth];
 			//std::cout << " x : " << x << "     y : " << y << " tmp : " << intTmp << std::endl;
-			this->texture->update(*this->Tiles[intTmp], x * this->tileWidth, y * this->tileHeight);
+			this->texture->update(*this->tiles[intTmp], x * this->tileWidth, y * this->tileHeight);
 		}
 	}
 
@@ -156,7 +171,14 @@ std::shared_ptr<MapTile> MapGame::getAtThisPosition(const int x, const int y)
 
 std::shared_ptr<MapTile> MapGame::getAtThisPositionNoeud(const int x, const int y)
 {
-	return this->Tiles[this->data[x + y *  this->nbTitleWidth]];
+	return this->tiles[this->data[x + y *  this->nbTitleWidth]];
+}
+
+std::shared_ptr<EntityTile> MapGame::getEntityTileAtThisPosition(const int x, const int y)
+{
+	std::pair<int,int> pair = this->GetMapTilePosition(x, y);
+	int tmp = pair.first + pair.second *  this->nbTitleWidth;
+	return this->entityTiles[tmp];
 }
 
 std::pair<int, int> MapGame::getHousePosition()
@@ -173,6 +195,36 @@ std::pair<int, int> MapGame::getHousePosition()
 	}
 	return std::pair<int, int>(x, y);
 }
+
+std::shared_ptr<EntityTile> MapGame::getEntityHousePosition()
+{
+	std::pair<int,int> pos = this->getHousePosition();
+
+	return this->entityTiles[pos.first + pos.second *  this->nbTitleWidth];
+}
+
+std::pair<int, int> MapGame::getFieldsPosition()
+{
+	int x, y;
+	bool find = false;
+	while (find == false)
+	{
+		x = utility::randInt(this->nbTitleWidth, false) - 1;
+		y = utility::randInt(this->nbTitleHeight, false) - 1;
+		if (this->getAtThisPositionNoeud(x, y)->fields == true) {
+			find = true;
+		}
+	}
+	return std::pair<int, int>(x, y);
+}
+
+std::shared_ptr<EntityTile> MapGame::getEntityFieldsPosition()
+{
+	std::pair<int, int> pos = this->getFieldsPosition();
+
+	return this->entityTiles[pos.first + pos.second *  this->nbTitleWidth];
+}
+
 
 
 bool MapGame::MoveMouse(const int x, const int y)
@@ -296,4 +348,9 @@ std::pair<int, int> MapGame::GetMapPosition(const int x, const int y) const
 std::shared_ptr<sf::RenderWindow> MapGame::GetWindow() const
 {
 	return this->window;
+}
+
+std::pair<int, int> MapGame::GetMapTilePosition(const int x, const int y) const
+{
+	return std::pair<int, int>(x/this->tileWidth, y/this->tileHeight);
 }

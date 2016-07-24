@@ -38,8 +38,15 @@ public:
 	{
 		return this->value;
 	}
+
+	virtual int GetEngineActive()
+	{
+		return this->engineActive;
+	}
+
 protected:
 	int value = 0;
+	bool engineActive = false;
 };
 
 #endif TINYSTATE

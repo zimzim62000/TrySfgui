@@ -13,6 +13,8 @@ class GameInterface;
 class MapGame;
 class tiny_state;
 class EntityManager;
+class TaskManager;
+class CoreEngine;
 
 
 class game_state
@@ -33,6 +35,10 @@ public:
 
 	void SetEntityManager(std::shared_ptr<EntityManager> EntityManager);
 
+	void SetTaskManager(std::shared_ptr<TaskManager> taskManager);
+
+	void SetCoreEngine(std::shared_ptr<CoreEngine> coreEngine);
+
 	void Update();
 
 	void Render();
@@ -44,6 +50,8 @@ public:
 	std::shared_ptr<tiny_state> state;
 	std::shared_ptr<MapGame> mapGame;
 	std::shared_ptr<EntityManager> entityManager;
+	std::shared_ptr<TaskManager> taskManager;
+	std::shared_ptr<CoreEngine> coreEngine;
 private:
 	float deltaT;
 };

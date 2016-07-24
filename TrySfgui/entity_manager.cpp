@@ -6,6 +6,8 @@
 #include "game_interface.h"
 #include "map_game.h"
 #include <iostream>
+#include "entity_factory.h"
+
 
 EntityManager::EntityManager() { this->numberId = 0; }
 
@@ -81,4 +83,26 @@ std::unordered_map<std::string, std::shared_ptr<Entity>> EntityManager::getEntit
 void EntityManager::Reset()
 {
 	this->entities.clear();
+}
+
+std::vector<std::shared_ptr<Entity>> EntityManager::GetAllFactory()
+{
+	std::vector<std::shared_ptr<Entity>> list;
+	for (auto& iterator : this->entities) {
+		if (iterator.second->Factory()) {
+			list.push_back(iterator.second);
+		}
+	}
+	return list;
+}
+
+std::vector<std::shared_ptr<Entity>> EntityManager::GetAllMovable()
+{
+	std::vector<std::shared_ptr<Entity>> list;
+	for (auto& iterator : this->entities) {
+		if (iterator.second->Movable()) {
+			list.push_back(iterator.second);
+		}
+	}
+	return list;
 }

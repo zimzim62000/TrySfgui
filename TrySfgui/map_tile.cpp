@@ -1,6 +1,7 @@
 #include "map_tile.h"
 #include <SFML/Graphics.hpp>
 
+
 MapTile::MapTile(const bool passable, const int weight) :  sf::Image()
 {
 	this->passable = passable;
@@ -45,7 +46,17 @@ bool  MapTile::GetFields() const
 	return this->fields;
 }
 
-bool  MapTile::GetStorehouse() const
+bool MapTile::GetStorehouse() const
 {
 	return this->storehouse;
+}
+
+std::string MapTile::GetName() const
+{
+	return this->tileName;
+}
+
+void MapTile::SetName(std::string name)
+{
+	this->tileName = name;
 }

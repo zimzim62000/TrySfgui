@@ -7,10 +7,11 @@
 class GameInterface;
 class MapGame;
 class Entity;
+class EntityFactory;
 
 #include <unordered_map>
 #include <memory>
-
+#include <vector>
 
 class EntityManager
 {
@@ -20,6 +21,8 @@ public:
 	bool Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
 	void Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
 	std::shared_ptr<Entity> Get(std::string name);
+	std::vector<std::shared_ptr<Entity>> GetAllFactory();
+	std::vector<std::shared_ptr<Entity>> GetAllMovable();
 	std::shared_ptr<Entity> GetAtThisPosition(const int x, const int y);
 	std::string GetAtThisPositionString(const int x, const int y);
 	void Reset();

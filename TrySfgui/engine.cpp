@@ -49,6 +49,7 @@ bool Engine::SetState(std::shared_ptr<tiny_state> state)
 	this->gameState->SetMapGame(this->mapGame);
 	this->gameState->SetGameInterface(this->gameInterface);
 	this->gameState->SetEntityManager(this->entityManager);
+	this->gameState->SetTaskManager(this->taskManager);
 	this->gameState->SetState(this->state);
 	return true;
 }

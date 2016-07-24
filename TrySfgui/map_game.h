@@ -6,9 +6,9 @@
 
 class GameInterface;
 class MapTile;
+class Camera;
+class EntityTile;
 
-//class Camera;
-#include "camera.h"
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -35,7 +35,7 @@ class MapGame : public sf::Sprite
 public:
 	MapGame(std::shared_ptr<sf::RenderWindow> window);
 
-	void Load(std::string filename);
+	bool Load(std::string filename);
 
 	void Update(std::shared_ptr<GameInterface> gameInterface);
 
@@ -47,9 +47,16 @@ public:
 
 	std::shared_ptr<MapTile> getAtThisPositionNoeud(const int x, const int y);
 
+	std::shared_ptr<EntityTile> getEntityTileAtThisPosition(const int x, const int y);
+
 	std::pair<int, int> GetMapPosition(const int x, const int y) const;
 
+	std::pair<int, int> GetMapTilePosition(const int x, const int y) const;
+
 	std::pair<int, int> getHousePosition();
+	std::shared_ptr<EntityTile> getEntityHousePosition();
+	std::pair<int, int> getFieldsPosition();
+	std::shared_ptr<EntityTile> getEntityFieldsPosition();
 
 	bool KeyPressed(const sf::Event event);
 
@@ -76,8 +83,6 @@ public:
 
 	std::shared_ptr<sf::RectangleShape> caseMouse;
 
-	std::vector<std::shared_ptr<MapTile>> Tiles;
-
 	std::shared_ptr<Camera> camera;
 
 	std::shared_ptr<sf::RenderWindow> GetWindow() const;
@@ -85,10 +90,15 @@ public:
 private:
 	void MapGame::GenerateSprite();
 
+	std::vector<std::shared_ptr<EntityTile>> entityTiles;
+	std::vector<std::shared_ptr<MapTile>> tiles;
+
 	std::shared_ptr<sf::RenderWindow> window;
 
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<sf::Image> tileSetTexture;
+
+
 };
 
 #endif MAPGAME

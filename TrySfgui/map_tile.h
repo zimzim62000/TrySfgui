@@ -5,6 +5,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <string>
+
 
 class MapTile : public sf::Image
 {
@@ -20,6 +22,12 @@ public:
 	bool GetCarpark() const;
 	bool GetFields() const;
 	bool GetStorehouse() const;
+
+	std::string GetName() const;
+	void SetName(std::string name);
+
+private:
+	std::string tileName;
 };
 
 #endif MAPTILE

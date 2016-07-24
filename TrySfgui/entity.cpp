@@ -25,6 +25,8 @@ Entity::Entity(const int x, const int y)
 	this->targetEntity->setOutlineThickness(2);
 	this->targetEntity->setOutlineColor(sf::Color(250, 150, 100));
 	this->targetEntity->setPosition(0, 0);
+
+	this->movable = false;
 }
 
 void Entity::Load(const std::string name)
@@ -54,7 +56,7 @@ void Entity::Load(const std::string name, const int tileWidth, const int tileHei
 bool Entity::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
 	auto tile = mapGame->getAtThisPosition(this->getPosition().x, this->getPosition().y);
-	//
+	
 	if(this->UpdateTask(GameInterface, mapGame)){
 
 		this->move(this->velocity * (this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime()));
@@ -263,4 +265,19 @@ void Entity::ActiveEntity()
 void Entity::DesactiveEntity()
 {
 	this->activeEntity = false;
+}
+
+bool Entity::Movable() const
+{
+	return this->movable;
+}
+
+bool Entity::Factory() const
+{
+	return this->factory;
+}
+
+void Entity::SetName(std::string name)
+{
+	this->name = name;
 }

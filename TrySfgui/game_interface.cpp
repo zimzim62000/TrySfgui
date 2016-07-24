@@ -129,27 +129,30 @@ void GameInterface::Click(sf::Event &event, std::shared_ptr<EntityManager> entit
 
 			if (this->GetActiveEntity()->GetFloatRect().contains(mousePos.first, mousePos.second))
 			{
-				this->GetActiveEntity()->StopMovement();
+				if (this->GetActiveEntity()->Movable()) {
+					this->GetActiveEntity()->StopMovement();
+				}
 			}
 			else {
-
-				auto task = taskManager->CreateTask(1);
-				auto tile = mapGame->getAtThisPosition(mousePos.first, mousePos.second);
-				if (tile->GetHouse()) {
-					task->AddName("house");
+				if(this->GetActiveEntity()->Movable()){
+					auto task = taskManager->CreateTask(1);
+					auto tile = mapGame->getAtThisPosition(mousePos.first, mousePos.second);
+					if (tile->GetHouse()) {
+						task->AddName("house");
+					}
+					else if (tile->GetStorehouse()) {
+						task->AddName("storehouse");
+					}
+					else if (tile->GetFields()) {
+						task->AddName("fields");
+					}
+					else if (tile->GetCarpark()) {
+						task->AddName("carpark");
+					}
+					task->SetTaget(mapGame->GetMapPosition(mousePos.first, mousePos.second));
+					this->GetActiveEntity()->AddTask(task, mapGame);
+					std::cout << "Add Move Task" << std::endl;
 				}
-				else if (tile->GetStorehouse()) {
-					task->AddName("storehouse");
-				}
-				else if (tile->GetFields()) {
-					task->AddName("fields");
-				}
-				else if (tile->GetCarpark()) {
-					task->AddName("carpark");
-				}
-				task->SetTaget(mapGame->GetMapPosition(mousePos.first, mousePos.second));
-				this->GetActiveEntity()->AddTask(task, mapGame);
-				std::cout << "Add Move Task" << std::endl;
 			}
 		}
 	}
