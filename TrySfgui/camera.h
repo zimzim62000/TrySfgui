@@ -14,7 +14,9 @@ public:
 	sf::Vector2i getPosition();
 	void setPosition(const int x, const int y);
 	void MoveCamera(const int x, const int y);
+	void MoveCamera(const float x, const float y);
 	bool ResetCamera();
+	bool ResetRectCamera();
 	bool MouseWheelScrolledMove(const float value);
 
 	float currentZoom;

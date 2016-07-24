@@ -39,6 +39,8 @@ public:
 
 	void Update(std::shared_ptr<GameInterface> gameInterface);
 
+	void Render(std::shared_ptr<GameInterface> gameInterface);
+
 	std::pair<int,int> GetReelPosition(const int x, const int y);
 
 	std::shared_ptr<MapTile> getAtThisPosition(const int x, const int y);
@@ -68,7 +70,7 @@ public:
 	bool mouseOnMove;
 	enum
 	{
-		MoveSpeed = 250,
+		MoveSpeed = 500,
 		MoveMouseBorder = 200
 	};
 

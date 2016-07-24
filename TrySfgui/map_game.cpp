@@ -144,6 +144,11 @@ void MapGame::Update(std::shared_ptr<GameInterface> gameInterface)
 	this->MoveMouse(gameInterface);
 }
 
+void MapGame::Render(std::shared_ptr<GameInterface> gameInterface)
+{
+	this->window->draw(*this->caseMouse);
+}
+
 std::shared_ptr<MapTile> MapGame::getAtThisPosition(const int x, const int y)
 {
 	return this->getAtThisPositionNoeud(x / this->tileWidth, y / this->tileWidth);
@@ -191,7 +196,9 @@ bool MapGame::MouseWheelScrolledMove(const sf::Event event)
 		
 		this->camera->setPosition(this->caseMouse->getPosition().x - this->camera->getSize().x / 2, this->caseMouse->getPosition().y - this->camera->getSize().y / 2);
 
-		this->CheckCamera();
+		if (this->CheckCamera()) {
+			this->camera->ResetCamera();
+		}
 
 		sf::Mouse::setPosition(sf::Vector2i(this->window->getSize().x / 2, this->window->getSize().y / 2), *this->window);
 	}
@@ -201,19 +208,23 @@ bool MapGame::MouseWheelScrolledMove(const sf::Event event)
 
 bool MapGame::CheckCamera()
 {
+	bool reset = false;
 	if (this->camera->getPosition().x < 0) {
 		this->camera->setPosition(0, this->camera->getPosition().y);
+		reset = true;
 	}else if (this->camera->getPosition().x > this->width - this->window->getSize().x * this->camera->currentZoom) {
 		this->camera->setPosition(this->width - this->window->getSize().x * this->camera->currentZoom, this->camera->getPosition().y);
+		reset = true;
 	}
 	if (this->camera->getPosition().y < 0) {
 		this->camera->setPosition(this->camera->getPosition().x, 0);
+		reset = true;
 	}else if (this->camera->getPosition().y >  this->height - this->window->getSize().y * this->camera->currentZoom) {
 		this->camera->setPosition(this->camera->getPosition().x, this->height - this->window->getSize().y * this->camera->currentZoom);
+		reset = true;
 	}
-	this->camera->ResetCamera();
 
-	return true;
+	return reset;
 }
 
 bool MapGame::KeyPressed(const sf::Event event)
@@ -242,24 +253,26 @@ bool MapGame::MoveMouse(std::shared_ptr<GameInterface> gameInterface)
 	x = sf::Mouse::getPosition(*this->window).x;
 	y = sf::Mouse::getPosition(*this->window).y;
 	bool move = false;
+	float dt = MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom;
+	//std::cout << "delta time " << dt << std::endl;
 	if (x < MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x - MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom, this->camera->getPosition().y);
+		this->camera->MoveCamera(-dt, 0.f);
 		move = true;
 	}
 	else if (x > this->window->getSize().x - MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x + MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom, this->camera->getPosition().y);
+		this->camera->MoveCamera(+dt, 0.f);
 		move = true;
 	}
 	if (y < MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y - MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom);
+		this->camera->MoveCamera(0.f, -dt);
 		move = true;
 	}
 	else if (y > this->window->getSize().y - MoveMouseBorder) {
-		this->camera->setPosition(this->camera->getPosition().x, this->camera->getPosition().y + MoveSpeed * gameInterface->GetDeltaTime() * this->camera->currentZoom);
+		this->camera->MoveCamera(0.f, dt);
 		move = true;
 	}
 	if (move) {
-		this->CheckCamera();
+
 	}
 	return move;
 }

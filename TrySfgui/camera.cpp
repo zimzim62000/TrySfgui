@@ -25,7 +25,8 @@ void Camera::folowEntity(Entity* entity) {
 */
 
 sf::Vector2i Camera::getPosition() {
-	return sf::Vector2i(this->x, this->y);
+
+	return sf::Vector2i(this->getCenter().x - this->getSize().x / 2, this->getCenter().y - this->getSize().y / 2);
 }
 
 void Camera::setPosition(const int x, const int y)
@@ -40,10 +41,23 @@ void Camera::MoveCamera(const int x, const int y)
 	this->move(x, y);
 }
 
+void Camera::MoveCamera(const float x, const float y)
+{
+	this->setPosition(this->getPosition().x + x, this->getPosition().y + y);
+	this->move(x, y);
+}
+
 bool Camera::ResetCamera()
 {
 	this->setCenter(sf::Vector2f(this->x + this->getSize().x / 2, this->y + this->getSize().y / 2));
 	
+	return true;
+}
+
+bool Camera::ResetRectCamera()
+{
+	this->reset(sf::FloatRect(this->x, this->y, this->getSize().x, this->getSize().y));
+
 	return true;
 }
 

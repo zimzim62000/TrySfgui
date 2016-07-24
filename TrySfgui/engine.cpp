@@ -21,7 +21,8 @@ Engine::Engine()
 	sf::ContextSettings antialiasing;
 	antialiasing.antialiasingLevel = 32;
 	this->window = std::make_shared<sf::RenderWindow>(sf::VideoMode(Config::screen_width, Config::screen_height), "Try Sf Gui", sf::Style::Close, antialiasing);
-	this->window->setFramerateLimit(60);
+	//this->window->setFramerateLimit(60);
+	
 	//this->window = std::make_shared<sf::RenderWindow>(sf::VideoMode(Config::screen_width, Config::screen_height), "Try Sf Gui", sf::Style::Fullscreen, antialiasing);
 	this->window->setPosition(sf::Vector2i(0, 0));
 

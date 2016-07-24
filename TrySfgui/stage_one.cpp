@@ -39,11 +39,11 @@ void stage_one::Render(std::shared_ptr<GameInterface> gameInterface, std::shared
 {
 	window->setView(*mapGame->camera);
 
+	mapGame->Render(gameInterface);
+
 	window->draw(*mapGame);
 
 	EntityManager->Render(gameInterface, mapGame);
-
-	window->draw(*mapGame->caseMouse);
 
 	window->setView(window->getDefaultView());
 
