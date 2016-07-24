@@ -71,7 +71,7 @@ public:
 	enum
 	{
 		MoveSpeed = 500,
-		MoveMouseBorder = 200
+		MoveMouseBorder = 100
 	};
 
 	std::shared_ptr<sf::RectangleShape> caseMouse;

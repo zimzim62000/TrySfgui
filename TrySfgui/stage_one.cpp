@@ -39,9 +39,9 @@ void stage_one::Render(std::shared_ptr<GameInterface> gameInterface, std::shared
 {
 	window->setView(*mapGame->camera);
 
-	mapGame->Render(gameInterface);
-
 	window->draw(*mapGame);
+
+	mapGame->Render(gameInterface);
 
 	EntityManager->Render(gameInterface, mapGame);
 
