@@ -22,7 +22,7 @@ class ActiveEntity : public sf::Drawable{
 public: 
 	ActiveEntity();
 	void SetEntity(std::shared_ptr<Entity> entity, std::shared_ptr<MapGame> mapGame);
-	void resetEntity();
+	void ResetEntity();
 	std::shared_ptr<Entity> GetEntity();
 	void Update(std::shared_ptr<MapGame> mapGame);
 
@@ -39,6 +39,7 @@ private:
 	std::shared_ptr<sf::Text> entityTaskTarget;
 	std::shared_ptr<sf::RectangleShape> background;
 
+	std::string taskTextDefault;
 
 	bool active = false;
 };

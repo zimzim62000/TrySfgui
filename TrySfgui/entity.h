@@ -39,14 +39,18 @@ public:
 
 	bool GetBusy();
 
+	void ActiveEntity();
+	void DesactiveEntity();
+	bool ActiveEntity() const;
+
 protected:
 
 	void AddTarget(const std::pair<int, int> target);
 
-	virtual void RunTask(std::shared_ptr<MapGame> mapGame);
+	virtual bool RunTask(std::shared_ptr<MapGame> mapGame);
 	virtual void UpdateAnimation(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
 
-	void UpdateTask(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
+	bool UpdateTask(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame);
 
 	std::shared_ptr<sf::Texture> texture;
 	std::shared_ptr<TodoList> todoList;
@@ -71,6 +75,8 @@ protected:
 	bool stopMovement = false;
 
 	int typeEntity;
+
+	bool activeEntity;
 };
 
 #endif ENTITY

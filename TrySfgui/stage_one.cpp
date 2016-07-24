@@ -3,6 +3,7 @@
 #include "map_game.h"
 #include <memory>
 #include "engine.h"
+#include "player.h"
 #include "entity.h"
 #include "game_interface.h"
 #include "entity_manager.h"
@@ -17,10 +18,8 @@ void stage_one::Initialize(std::shared_ptr<GameInterface> gameInterface, std::sh
 	std::pair<int, int> pos;
 	pos = mapGame->getHousePosition();
 
-	auto Player = std::make_shared<Entity>(pos.first*mapGame->tileWidth, pos.second*mapGame->tileHeight);
-	Player->Load("player.png", 128, 128, 6, 1);
-
-	EntityManager->Add("player", Player);
+	auto player = std::make_shared<Player>(pos.first*mapGame->tileWidth, pos.second*mapGame->tileHeight);
+	EntityManager->Add("player", player);
 }
 
 void stage_one::Update(std::shared_ptr<GameInterface> gameInterface, std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<MapGame> mapGame, std::shared_ptr<EntityManager> EntityManager)

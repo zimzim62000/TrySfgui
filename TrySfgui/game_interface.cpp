@@ -95,7 +95,7 @@ bool GameInterface::SetEntity(std::shared_ptr<Entity> entity, std::shared_ptr<Ma
 bool GameInterface::ResetEntity()
 {
 	this->entityActive = false;
-
+	this->activeEntity->ResetEntity();
 	return true;
 }
 

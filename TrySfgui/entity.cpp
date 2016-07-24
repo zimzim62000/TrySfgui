@@ -8,6 +8,7 @@
 #include "path_finding.h"
 #include "utility.h"
 #include "game_speed.h"
+#include "map_tile.h"
 
 Entity::Entity(const int x, const int y)
 {
@@ -17,6 +18,7 @@ Entity::Entity(const int x, const int y)
 	this->velocity = sf::Vector2f(0, 0);
 	this->speed = 100;
 	this->typeEntity = 0;
+	this->activeEntity = false;
 
 	this->targetEntity = std::make_shared<sf::CircleShape>(10);
 	this->targetEntity->setFillColor(sf::Color(150, 50, 250));
@@ -51,102 +53,114 @@ void Entity::Load(const std::string name, const int tileWidth, const int tileHei
 
 bool Entity::Update(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
-	this->UpdateTask(GameInterface, mapGame);
+	auto tile = mapGame->getAtThisPosition(this->getPosition().x, this->getPosition().y);
+	//
+	if(this->UpdateTask(GameInterface, mapGame)){
+
+		this->move(this->velocity * (this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime()));
+	}
 
 	this->UpdateAnimation(GameInterface, mapGame);
-
-	this->move(this->velocity * (this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime()));
 
 	return true;
 }
 
-void Entity::UpdateTask(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
+bool Entity::UpdateTask(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
 	if (this->todoList->Size() != 0)
 	{
-		if (!this->todoList->GetTask()->GetRun()) {
+		if (!this->todoList->GetTask()->GetRun())
+		{
 			this->RunTask(mapGame);
 		}
-
-		if (this->todoList->Size() != 0)
+		else
 		{
-			switch (this->todoList->GetTask()->GetIdTypeTask()) {
-			case 0:
-				break;
-			case 1:
-				if (!this->todoList->GetTask()->Done())
-				{
-					if (this->velocity.x == 0 && this->velocity.y == 0)
+			switch (this->todoList->GetTask()->GetIdTypeTask())
+			{
+				case 0:
+					break;
+				case 1:
+					if (!this->todoList->GetTask()->Done())
 					{
-						this->NextTarget = this->listPoint.front();
-						sf::Vector2f diff = utility::diffVecteur2(sf::Vector2f(this->NextTarget.first, this->NextTarget.second), sf::Vector2f(this->getPosition().x, this->getPosition().y));
-						this->velocity = utility::normalizeVecteur(diff);
-						if (isnan(this->velocity.x) || isnan(this->velocity.y)) {
+						if (this->velocity.x == 0 && this->velocity.y == 0)
+						{
+							this->NextTarget = this->listPoint.front();
+							sf::Vector2f diff = utility::diffVecteur2(sf::Vector2f(this->NextTarget.first, this->NextTarget.second), sf::Vector2f(this->getPosition().x, this->getPosition().y));
+							this->velocity = utility::normalizeVecteur(diff);
+							if (isnan(this->velocity.x) || isnan(this->velocity.y)) {
+								this->velocity.x = 0;
+								this->velocity.y = 0;
+							}
+						}
+						float distanceX = abs(this->NextTarget.first - this->getPosition().x);
+						float distanceY = abs(this->NextTarget.second - this->getPosition().y);
+						float speedX = abs(this->velocity.x * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
+						float speedY = abs(this->velocity.y * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
+
+						if (distanceX <= speedX && distanceY <= speedY)
+						{
+							this->setPosition(this->NextTarget.first, this->NextTarget.second);
 							this->velocity.x = 0;
 							this->velocity.y = 0;
+							this->listPoint.pop_front();
+							if (this->NextTarget.first == this->todoList->GetTask()->GetTarget().first * mapGame->tileWidth && this->NextTarget.second == this->todoList->GetTask()->GetTarget().second * mapGame->tileHeight) {
+								this->todoList->DeleteTask();
+								std::cout << "delete task" << std::endl;
+							}
+							if (this->stopMovement) {
+								this->CancelTask();
+							}
 						}
 					}
-					float distanceX = abs(this->NextTarget.first - this->getPosition().x);
-					float distanceY = abs(this->NextTarget.second - this->getPosition().y);
-					float speedX = abs(this->velocity.x * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
-					float speedY = abs(this->velocity.y * this->speed * GameInterface->gameSpeed->getGameSpeedDeltaTime());
-
-					if (distanceX <= speedX && distanceY <= speedY)
-					{
-						this->setPosition(this->NextTarget.first, this->NextTarget.second);
-						this->velocity.x = 0;
-						this->velocity.y = 0;
-						this->listPoint.pop_front();
-						if (this->NextTarget.first == this->todoList->GetTask()->GetTarget().first * mapGame->tileWidth && this->NextTarget.second == this->todoList->GetTask()->GetTarget().second * mapGame->tileHeight) {
-							this->todoList->DeleteTask();
-							std::cout << "delete task" << std::endl;
-						}
-						if (this->stopMovement) {
-							this->CancelTask();
-						}
-					}
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
 			}
 		}
 	}
+	return true;
 }
 
-void Entity::RunTask(std::shared_ptr<MapGame> mapGame)
+bool Entity::RunTask(std::shared_ptr<MapGame> mapGame)
 {
-	auto pathFinding = std::make_shared<PathFinding>();
-	int x, y;
-	bool activate = false;
-	pathFinding->resetPath();
-	x = this->getPosition().x;
-	y = this->getPosition().y;
-	int posX = int(x / mapGame->tileWidth);
-	int posY = int(y / mapGame->tileHeight);
-	std::cout << "Find Road : " << posX << "--" << posY  << "--" << this->todoList->GetTask()->GetTarget().first << "--" << this->todoList->GetTask()->GetTarget().second << std::endl;
-	switch (this->todoList->GetTask()->GetIdTypeTask()) {
-	case 1:
-		pathFinding->findRoad(mapGame, posX, posY, this->todoList->GetTask()->GetTarget().first, this->todoList->GetTask()->GetTarget().second);
-		while (pathFinding->chemin.size() > 0) {
-			point pt = pathFinding->chemin.front();
-			this->AddTarget(std::pair<int, int>(pt.x * mapGame->tileWidth, pt.y* mapGame->tileHeight));
-			pathFinding->chemin.pop_front();
-			activate = true;
-		}
-		break;
-	default:
-		break;
+	if (this->todoList->Size() != 0) {
+		auto pathFinding = std::make_shared<PathFinding>();
+		int x, y;
+		bool activate = false;
+		pathFinding->resetPath();
+		x = this->getPosition().x;
+		y = this->getPosition().y;
+		int posX = int(x / mapGame->tileWidth);
+		int posY = int(y / mapGame->tileHeight);
+		std::cout << "Find Road : " << posX << "--" << posY << "--" << this->todoList->GetTask()->GetTarget().first << "--" << this->todoList->GetTask()->GetTarget().second << std::endl;
+		switch (this->todoList->GetTask()->GetIdTypeTask()) {
+		case 1:
+			pathFinding->findRoad(mapGame, posX, posY, this->todoList->GetTask()->GetTarget().first, this->todoList->GetTask()->GetTarget().second);
+			while (pathFinding->chemin.size() > 0) {
+				point pt = pathFinding->chemin.front();
+				this->AddTarget(std::pair<int, int>(pt.x * mapGame->tileWidth, pt.y* mapGame->tileHeight));
+				pathFinding->chemin.pop_front();
+				activate = true;
+			}
+			break;
+		default:
+			break;
 
-	}
-	if(activate){
-		this->todoList->GetTask()->SetRun();
-		if (this->todoList->GetTask()->Target()) {
-			this->targetEntity->setPosition(this->todoList->GetTask()->GetTarget().first * mapGame->tileWidth, this->todoList->GetTask()->GetTarget().second * mapGame->tileHeight);
+		}
+		if (activate) {
+			this->todoList->GetTask()->SetRun();
+			if (this->todoList->GetTask()->Target()) {
+				this->targetEntity->setPosition(this->todoList->GetTask()->GetTarget().first * mapGame->tileWidth, this->todoList->GetTask()->GetTarget().second * mapGame->tileHeight);
+			}
+			return true;
+		}
+		else {
+			this->todoList->DeleteTask();
+			return this->RunTask(mapGame);
 		}
 	}
 	else {
-		this->todoList->DeleteTask();
+		return false;
 	}
 }
 
@@ -173,9 +187,11 @@ void Entity::AddTarget(const std::pair<int, int> target)
 
 bool Entity::Render(std::shared_ptr<GameInterface> GameInterface, std::shared_ptr<MapGame> mapGame)
 {
-	if (this->GetTodoList()->Size() != 0) {
-		if (this->GetTask()->Target()) {
-			mapGame->GetWindow()->draw(*this->targetEntity);
+	if(this->activeEntity){
+		if (this->GetTodoList()->Size() != 0) {
+			if (this->GetTask()->Target()) {
+				mapGame->GetWindow()->draw(*this->targetEntity);
+			}
 		}
 	}
 
@@ -230,4 +246,21 @@ void Entity::CancelTask()
 sf::FloatRect Entity::GetFloatRect() const
 {
 	return sf::FloatRect(this->getPosition().x, this->getPosition().y, this->getGlobalBounds().width, this->getGlobalBounds().height);
+}
+
+
+bool Entity::ActiveEntity() const
+{
+	return this->activeEntity;
+
+}
+
+void Entity::ActiveEntity()
+{
+	this->activeEntity = true;
+}
+
+void Entity::DesactiveEntity()
+{
+	this->activeEntity = false;
 }
